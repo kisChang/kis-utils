@@ -11,6 +11,11 @@ SimpleUtils
 > - PageHandler（分页查询处理）
 
 --------------
+> **formbean:**
+
+> - ModelMessage （用于页面展示用的提示消息）
+
+--------------
 
 > **utils:**
 

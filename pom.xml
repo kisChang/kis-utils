@@ -14,6 +14,7 @@
 
     <properties>
         <jackson.version>1.9.13</jackson.version>
+        <spring.version>4.0.6.RELEASE</spring.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.7</jdk-version>
@@ -30,6 +31,12 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
         </dependency>
     </dependencies>
 
