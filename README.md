@@ -23,6 +23,7 @@ SimpleUtils
 > - BytesUtils（二进制数组操作：MD5、Base64、copy）
 > - DESUtils（DES算法加密解密工具类）
 > - JacksonUtils（Jackson JSON工具类的方法）
+> - ZXingUtils（二维码工具类）
 
 --------------
 

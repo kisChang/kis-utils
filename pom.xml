@@ -15,6 +15,7 @@
     <properties>
         <jackson.version>1.9.13</jackson.version>
         <spring.version>4.0.6.RELEASE</spring.version>
+        <zxing.version>3.2.1</zxing.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.7</jdk-version>
@@ -33,6 +34,18 @@
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>${zxing.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>javase</artifactId>
+            <version>${zxing.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
