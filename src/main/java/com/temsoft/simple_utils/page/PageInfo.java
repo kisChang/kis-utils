@@ -1,6 +1,7 @@
 package com.temsoft.simple_utils.page;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.springframework.ui.Model;
 
 import java.io.Serializable;
 
@@ -9,8 +10,6 @@ import java.io.Serializable;
  *
  * @author KisChang
  * @version 1.0
- * @date 2015年09月24日
- * @see PageInfo
  * @since 1.0
  */
 public class PageInfo implements Serializable {
@@ -18,6 +17,10 @@ public class PageInfo implements Serializable {
     private int pageSize = 10;  //每页显示的条数
     private int totalPage;      //总页数
     private String url;         //页面的完整url地址
+
+    public static void setToModal(PageInfo pageInfo, Model modal){
+        modal.addAttribute("page", pageInfo);
+    }
 
     public PageInfo() {
         super();
