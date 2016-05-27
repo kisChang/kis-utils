@@ -9,6 +9,7 @@ SimpleUtils
 > - PageInfo （分页对象）
 > - PageModal（分页实体类描述）
 > - PageHandler（分页查询处理）
+> - ReqPageInfo（分页对象注入）
 
 --------------
 > **formbean:**
