@@ -24,6 +24,7 @@ SimpleUtils
 > - DESUtils（DES算法加密解密工具类）
 > - JacksonUtils（Jackson JSON工具类的方法）
 > - ZXingUtils（二维码工具类）
+> - NumberArrConvertingStringUtils（数值型数组和字符串之间转换）
 
 --------------
 
