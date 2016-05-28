@@ -16,6 +16,7 @@
         <jackson.version>1.9.13</jackson.version>
         <spring.version>4.0.6.RELEASE</spring.version>
         <zxing.version>3.2.1</zxing.version>
+        <scala.version>2.11.8</scala.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.7</jdk-version>
@@ -23,6 +24,12 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -69,6 +76,28 @@
                     <target>${jdk-version}</target>
                     <source>${jdk-version}</source>
                     <encoding>${file-charset}</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <arg>-dependencyfile</arg>
+                                <arg>${project.build.directory}/.scala_dependencies</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
         </plugins>
