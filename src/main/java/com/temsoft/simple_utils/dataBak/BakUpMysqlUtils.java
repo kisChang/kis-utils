@@ -61,7 +61,6 @@ public class BakUpMysqlUtils {
                 os.close();
             }
         });
-        CommandUtils.printResult(result);
         return result.getExitCode();
     }
 
