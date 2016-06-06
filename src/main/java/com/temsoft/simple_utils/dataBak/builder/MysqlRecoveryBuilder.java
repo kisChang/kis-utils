@@ -45,6 +45,9 @@ public class MysqlRecoveryBuilder {
         sb.append(" --host=").append(host);
         sb.append(" --port=").append(port);
         sb.append(" --default-character-set=").append(charset);
+        //忽略错误
+        // （否则调用过程中可能会出现类似异常：【IOException: 断开的管道断开的管道】）
+        // （原因：因为调用过程中有错误输出而导致输入流异常）
         sb.append(" --force ");
 
         return sb.toString();
