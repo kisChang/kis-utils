@@ -53,7 +53,7 @@ public class MysqlDumpBuilder {
             return null;
         }
         String tmp = command == null ?
-                ( commandType ? " /usr/bin/mysqldump " : " mysqldump.exe " )
+                ( commandType ? " mysqldump " : " mysqldump.exe " )
                 : command;
 
         StringBuilder sb = new StringBuilder(tmp);
