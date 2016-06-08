@@ -46,7 +46,7 @@ public class MysqlDumpBuilder {
     private boolean compact = true;         //默认 (--compact)输出更少的信息
 
     //--opt 相当于 --add-drop-table --add-locks --create-options --disable-keys --extended-insert --lock-tables --quick --set-charset
-    private boolean opt = true;
+    private boolean opt = false;
 
     public String build(){
         if(checkErr()){
@@ -61,6 +61,8 @@ public class MysqlDumpBuilder {
         sb.append(" --password=").append(password);
         sb.append(" --host=").append(host);
         sb.append(" --port=").append(port);
+
+        sb.append(" --single-transaction ");
 
 
         if (!hasCreateDB){
