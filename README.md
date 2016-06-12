@@ -16,6 +16,7 @@ SimpleUtils
 > - ResourceLoader（资源加载类）
 > - CompressUtils（压缩工具类）
 > - FileUtils（操作文件和目录的工具类）
+> - AbstractFileUpload（文件上传）
 
 --------------
 
@@ -25,6 +26,7 @@ SimpleUtils
 > - PageModal（分页实体类描述）
 > - PageHandler（分页查询处理）
 > - ReqPageInfo（分页对象注入）
+> - ResponseData（返回Json）
 
 --------------
 > **formbean:**
