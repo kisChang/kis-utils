@@ -17,6 +17,7 @@ SimpleUtils
 > - CompressUtils（压缩工具类）
 > - FileUtils（操作文件和目录的工具类）
 > - AbstractFileUpload（文件上传）
+> - PathUtils（路径工具）
 
 --------------
 

@@ -5,12 +5,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
- * 常用工具方法
+ * 各种目录工具方法
  *
  * @author KisChang
  * @version 1.0
  */
-public class MyUtils {
+public class PathUtils {
 
     public static String getWebInfPath(String... fileName){
         URL url = Thread.currentThread().getContextClassLoader().getResource("");
@@ -74,7 +74,7 @@ public class MyUtils {
         return appendFileName(new StringBuilder(classpath),fileName);
     }
 
-    private static String appendFileName(StringBuilder sb, String[] fileName) {
+    public static String appendFileName(StringBuilder sb, String[] fileName) {
         for (String str : fileName){
             sb.append(str);
         }
