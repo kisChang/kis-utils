@@ -45,7 +45,7 @@ public abstract class AbstractFileUpload {
      * @param uId       接收的用户ID
      * @return  true 可操作 false 不可操作
      */
-    protected abstract boolean checkUId(long uId, HttpServletRequest request);
+    protected abstract boolean checkUId(Long uId, HttpServletRequest request);
 
 
     /**
