@@ -10,7 +10,7 @@
 
     <tag>
         <name>printHtml</name>
-        <tag-class>com.temsoft.simple_utils.taglib.PrintHtmlContentTag</tag-class>
+        <tag-class>com.kischang.simple_utils.taglib.PrintHtmlContentTag</tag-class>
         <body-content>scriptless</body-content>
         <attribute>
             <name>var</name>
@@ -32,49 +32,49 @@
     <function>
         <description>截取图片名称</description>
         <name>subPicNameBase</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String subPicName(java.lang.String,java.lang.String)</function-signature>
     </function>
     <function>
         <description>截取图片名称</description>
         <name>subPicName</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String subPicName(java.lang.String)</function-signature>
     </function>
     <function>
         <description>URLEncode</description>
         <name>urlEncode</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String urlEncode(java.lang.String,java.lang.String)</function-signature>
     </function>
     <function>
         <description>截取一段字符串</description>
         <name>subString</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String subString(boolean,java.lang.Object,int,java.lang.String)</function-signature>
     </function>
     <function>
         <description>隐藏字符串的部分字符，字符数控制</description>
         <name>hidePartStrOnNum</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String hidePartStrOnNum(java.lang.String,int,int,java.lang.String)</function-signature>
     </function>
     <function>
         <description>隐藏字符串的部分字符，字符前</description>
         <name>hidePartStrOnChar</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String hidePartStrOnChar(java.lang.String,int,char,java.lang.String)</function-signature>
     </function>
     <function>
         <description>设置时间格式化Pattern</description>
         <name>setFormatPattern</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String setFormatPattern(java.lang.String)</function-signature>
     </function>
     <function>
         <description>格式化时间字符串</description>
         <name>formatDate</name>
-        <function-class>com.temsoft.simple_utils.taglib.FunctionUtils</function-class>
+        <function-class>com.kischang.simple_utils.taglib.FunctionUtils</function-class>
         <function-signature>java.lang.String formatDate(java.util.Date)</function-signature>
     </function>
 </taglib>
