@@ -41,12 +41,13 @@ public abstract class AbstractFileUpload {
      */
     protected abstract String getAccessPath(String fileName);
 
+    protected abstract Long getUid(HttpServletRequest request);
+
     /**
      * @param uId       接收的用户ID
      * @return  true 可操作 false 不可操作
      */
     protected abstract boolean checkUId(Long uId, HttpServletRequest request);
-
 
     /**
      * @return 文件名称
@@ -64,8 +65,8 @@ public abstract class AbstractFileUpload {
             return new ResponseData(false, "请选择jpeg、jpg、png类型的图片！", -1);
         }
         String fileName = getFileName(file, request);
-        String accessPath = getAccessPath(fileName);
-        String savePath = getUploadPath(accessPath);
+        String accessPath = f2a(getAccessPath(fileName));
+        String savePath = a2f(getUploadPath(accessPath));
         OutputStream os = null;
         try {
             File saveFile = new File(savePath);
@@ -81,6 +82,10 @@ public abstract class AbstractFileUpload {
         }
         Map<String,Object> map = new HashMap<>();
         map.put("picName", fileName);
+        Long uId = getUid(request);
+        if(uId != null && uId > 0){
+            map.put("uId", uId);
+        }
         map.put("accessPath", accessPath);
         return new ResponseData<Map<String,Object>>(true, accessPath, 0).setContent(map);
     }
@@ -97,7 +102,7 @@ public abstract class AbstractFileUpload {
             //实际为无操作权限
             return new ResponseData(false, "没有找到文件！", -2);
         }
-        String filePath = getUploadPath(getAccessPath(picName));
+        String filePath = a2f(getUploadPath(getAccessPath(picName)));
         File file = new File(filePath);
         if (!file.exists()){
             return new ResponseData(false, "没有找到文件！", -2);
@@ -106,6 +111,28 @@ public abstract class AbstractFileUpload {
             return new ResponseData(true, "删除成功！", 0);
         }else{
             return new ResponseData(false, "删除失败，请稍后重试！", -3);
+        }
+    }
+
+    private static String f2a(String str){
+        if (str == null || "".equals(str)){
+            return null;
+        }
+        if (File.separator.equalsIgnoreCase("/")){
+            return str;
+        }else {
+            return str.replaceAll("\\\\", "/");
+        }
+    }
+
+    private static String a2f(String str){
+        if (str == null || "".equals(str)){
+            return null;
+        }
+        if (File.separator.equalsIgnoreCase("/")){
+            return str;
+        }else {
+            return str.replaceAll("/", "\\\\");
         }
     }
 
