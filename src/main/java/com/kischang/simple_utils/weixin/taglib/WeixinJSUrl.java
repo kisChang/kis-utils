@@ -1,8 +1,8 @@
 package com.kischang.simple_utils.weixin.taglib;
 
+import com.kischang.simple_utils.utils.BytesUtils;
 import com.kischang.simple_utils.utils.SimpleUtils;
 import com.kischang.simple_utils.weixin.utils.WeixinJSSDKUtils;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.Tag;
@@ -53,7 +53,7 @@ public class WeixinJSUrl extends TagSupport {
 
         //第二步：生成签名
         String tmp = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
-        String signature = DigestUtils.sha1Hex(tmp);
+        String signature = BytesUtils.getSha1(tmp);
 
         String content;
         if (format){

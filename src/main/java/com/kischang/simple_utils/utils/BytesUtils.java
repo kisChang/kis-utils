@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
@@ -18,8 +19,6 @@ public class BytesUtils
 	private static final int MASK4 = 0x0f, MASK6 = 0x3f, MASK8 = 0xff;
 
 	private static final Map<Integer, byte[]> DECODE_TABLE_MAP = new ConcurrentHashMap<Integer, byte[]>();
-
-	private static ThreadLocal<MessageDigest> MD = new ThreadLocal<MessageDigest>();
 
 	/**
 	 * byte array copy.
@@ -874,22 +873,40 @@ public class BytesUtils
 		return md.digest();
 	}
 
-	private static MessageDigest getMessageDigest()
-	{
+	private static ThreadLocal<MessageDigest> MD = new ThreadLocal<MessageDigest>();
+	private static MessageDigest getMessageDigest() {
 		MessageDigest ret = MD.get();
-		if( ret == null )
-		{
-			try
-			{
+		if (ret == null) {
+			try {
 				ret = MessageDigest.getInstance("MD5");
 				MD.set(ret);
-			}
-			catch(NoSuchAlgorithmException e)
-			{
+			} catch (NoSuchAlgorithmException e) {
 				throw new RuntimeException(e);
 			}
 		}
 		return ret;
+	}
+
+	private static ThreadLocal<MessageDigest> SHA = new ThreadLocal<MessageDigest>();
+	private static MessageDigest getShaDigest() {
+		MessageDigest ret = SHA.get();
+		if (ret == null) {
+			try {
+				ret = MessageDigest.getInstance("SHA");
+				SHA.set(ret);
+			} catch (NoSuchAlgorithmException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return ret;
+	}
+
+	public static String getSha1(String tmp) {
+		return bytes2hex(
+				getShaDigest().digest(
+						tmp.getBytes(Charset.forName("utf-8"))
+				)
+		);
 	}
 
 	private BytesUtils(){}
