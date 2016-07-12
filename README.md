@@ -18,6 +18,8 @@ SimpleUtils
 > - FileUtils（操作文件和目录的工具类）
 > - AbstractFileUpload（文件上传）
 > - PathUtils（路径工具）
+> - WeixinUtils（微信工具类）
+> - WeixinJSSDKUtils（微信JS-SDK工具类）
 
 --------------
 
@@ -38,4 +40,5 @@ SimpleUtils
 
 > **taglib:**
 
-> - 可用URI： http://kischang.com/util-functions
+> - 常用工具方法URI： http://kischang.com/util-functions
+> - 微信JS-SDK 工具URI： http://kischang.com/util-functions

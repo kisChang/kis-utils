@@ -7,7 +7,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import java.util.Map;
 
 /**
- * JSSDK 工具类
+ * JS-SDK 工具类
  *
  * @author KisChang
  * @version 1.0
