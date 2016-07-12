@@ -1,6 +1,6 @@
 package com.kischang.simple_utils.page;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.ui.Model;
 
 import java.io.Serializable;

@@ -8,6 +8,7 @@
     <short-name>fun</short-name>
     <uri>http://kischang.com/util-functions</uri>
 
+    <!--输出文本-->
     <tag>
         <name>printHtml</name>
         <tag-class>com.kischang.simple_utils.taglib.PrintHtmlContentTag</tag-class>
@@ -29,6 +30,26 @@
             <type>java.lang.String</type>
         </attribute>
     </tag>
+
+    <!--获取当前网页的URL-->
+    <tag>
+        <name>getUrl</name>
+        <tag-class>com.kischang.simple_utils.taglib.TaglibGetUrl</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>forward</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>var</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+    </tag>
+
     <function>
         <description>截取图片名称</description>
         <name>subPicNameBase</name>

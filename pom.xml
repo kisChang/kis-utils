@@ -17,6 +17,7 @@
         <spring.version>4.0.6.RELEASE</spring.version>
         <zxing.version>3.2.1</zxing.version>
         <scala.version>2.11.8</scala.version>
+        <httpclient.version>4.5.2</httpclient.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.7</jdk-version>
@@ -47,6 +48,16 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
             <version>1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
 
         <!--Servlet -->
