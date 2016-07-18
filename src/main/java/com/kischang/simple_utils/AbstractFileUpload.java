@@ -24,6 +24,11 @@ import java.util.Map;
 public abstract class AbstractFileUpload {
 
     /**
+     * 方法调用前先执行
+     */
+    protected abstract boolean beforeMethod();
+
+    /**
      * 获取可用文件类型
      * @return Map (content-type, .文件后缀)
      */
@@ -58,6 +63,9 @@ public abstract class AbstractFileUpload {
     public
     @ResponseBody
     ResponseData uploadGoodsPic(@RequestParam MultipartFile file, HttpServletRequest request){
+        if (!beforeMethod()){
+            return new ResponseData(false, "不允许的操作！", -1);
+        }
         if (file == null){
             return new ResponseData(false, "文件为空！", -1);
         }
@@ -95,6 +103,9 @@ public abstract class AbstractFileUpload {
     public
     @ResponseBody
     ResponseData uploadGoodsPicDel(Long uId, String picName, HttpServletRequest request){
+        if (!beforeMethod()){
+            return new ResponseData(false, "不允许的操作！", -1);
+        }
         if (picName == null || "".equals(picName)){
             return new ResponseData(false, "文件名错误！", -1);
         }
