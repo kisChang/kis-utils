@@ -909,5 +909,13 @@ public class BytesUtils
 		);
 	}
 
+	public static String getMd5(String tmp) {
+		return bytes2hex(
+				getMD5(
+						tmp
+				)
+		);
+	}
+
 	private BytesUtils(){}
 }
