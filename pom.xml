@@ -17,7 +17,6 @@
         <spring.version>4.0.6.RELEASE</spring.version>
         <zxing.version>3.2.1</zxing.version>
         <scala.version>2.11.8</scala.version>
-        <httpclient.version>4.5.2</httpclient.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.7</jdk-version>
@@ -36,6 +35,8 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
 
         <!--Commons-->
@@ -57,7 +58,12 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
+            <version>4.5.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.4.4</version>
         </dependency>
 
         <!--Servlet -->
