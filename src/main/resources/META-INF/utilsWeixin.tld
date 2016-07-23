@@ -26,6 +26,24 @@
             <type>java.lang.String</type>
         </attribute>
         <attribute>
+            <name>timestamp</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>nonceStr</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>ticket</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
             <name>appId</name>
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
@@ -48,6 +66,36 @@
             <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.util.ArrayList</type>
+        </attribute>
+        <attribute>
+            <name>format</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.Boolean</type>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>weixinPay</name>
+        <tag-class>com.kischang.simple_utils.weixin.taglib.WeixinPay</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>appId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>appKey</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>packageStr</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>java.lang.String</type>
         </attribute>
         <attribute>
             <name>format</name>

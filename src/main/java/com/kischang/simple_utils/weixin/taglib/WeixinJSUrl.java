@@ -20,8 +20,12 @@ public class WeixinJSUrl extends TagSupport {
     private String jsUrl = "//res.wx.qq.com/open/js/jweixin-1.1.0.js";
     private String appId;
     private String appSecret;
+    private String ticket = null;
     private boolean debug = false;
     private boolean format = false;
+
+    private String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
+    private String nonceStr = SimpleUtils.getRandomString(15);
 
     private List<String> jsApiList;
 
@@ -44,12 +48,12 @@ public class WeixinJSUrl extends TagSupport {
         }
 
         //第一步：获取 access_token（需要缓存） 后加载 js api ticket
-        String ticket = WeixinJSSDKUtils.getJsapiTicket(appId, appSecret);
+        if (ticket == null){
+            ticket = WeixinJSSDKUtils.getJsapiTicket(appId, appSecret);
+        }
         if (ticket == null){
             return Tag.SKIP_BODY;
         }
-        String timestamp = String.valueOf(System.currentTimeMillis() / 1000);
-        String nonceStr = SimpleUtils.getRandomString(15);
 
         //第二步：生成签名
         String tmp = String.format("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", ticket, nonceStr, timestamp, url);
@@ -82,6 +86,10 @@ public class WeixinJSUrl extends TagSupport {
         return Tag.SKIP_BODY;
     }
 
+    public void setTicket(String ticket) {
+        this.ticket = ticket;
+    }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -108,5 +116,13 @@ public class WeixinJSUrl extends TagSupport {
 
     public void setJsApiList(List<String> jsApiList) {
         this.jsApiList = jsApiList;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setNonceStr(String nonceStr) {
+        this.nonceStr = nonceStr;
     }
 }
