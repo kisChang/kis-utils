@@ -3,6 +3,8 @@ package com.kischang.simple_utils.utils;
 import java.util.Date;
 
 /**
+ * 距离当前时间计算工具类
+ *
  * @author KisChang
  * @version 0.1
  */
@@ -43,12 +45,12 @@ public class MillisStringUtils {
      * @author KisChang
      * @version 1.0
      */
-    public static class MillisString {
+    public static class MillisString implements java.io.Serializable {
 
         private long num;
         private Type type;
 
-        public enum Type {
+        public enum Type implements java.io.Serializable {
             Minute("分钟", Type.Minute_Val), Hour("小时", Type.Hour_Val), Day("天", Type.Day_Val);
 
             public static final int Minute_Val  = 1;
