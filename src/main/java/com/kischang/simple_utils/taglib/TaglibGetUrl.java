@@ -32,7 +32,13 @@ public class TaglibGetUrl extends TagSupport {
         if (proto == null || "".equals(proto) || "null".equals(proto)){
             proto = "http";
         }
-        String param = "?" + request.getQueryString();
+        String queryStr = request.getQueryString();
+        String param;
+        if ( null == queryStr || "".equals(queryStr) || "null".equalsIgnoreCase(queryStr)){
+            param = "";
+        }else {
+            param = "?" + request.getQueryString();
+        }
 
         String url = proto + "://" + host + uri + param;
         if (var != null){
