@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class ZipUtilApache {
 
@@ -69,7 +70,7 @@ public class ZipUtilApache {
      * @param zipFileName  ZIP文件名称
      * @param destFilePath 输出目录
      */
-    public static void unZip(InputStream zipIn, String zipFileName, String destFilePath) {
+    public static void unZip(InputStream zipIn, String zipFileName, String destFilePath, String filterRegex) {
         long stratTime = System.currentTimeMillis();
         String tempDir = System.getProperty("java.io.tmpdir")+File.separator+"JavaUnZipTemp"+File.separator;
         logger.log(Level.INFO,"获取临时目录:"+tempDir);
@@ -93,7 +94,7 @@ public class ZipUtilApache {
             fos = null;
             String temp = destFilePath + File.separator + zipFileName + File.separator;
             logger.log(Level.INFO,"临时文件写入完成，开始解压:"+tempZipFile+"  至："+temp);
-            unZip(tempZipPath, temp);
+            unZip(tempZipPath, temp, filterRegex);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -118,23 +119,29 @@ public class ZipUtilApache {
      * @param destFilePath 解压后存放文件的路径 如："c:\\temp"
      * @throws Exception
      */
-    public static void unZip(String fileName, String destFilePath)
+    public static void unZip(String fileName, String destFilePath, String filterRegex)
             throws Exception {
+        Pattern pattern = filterRegex == null ? null : Pattern.compile(filterRegex);
         ZipFile zipFile = new ZipFile(fileName, "GBK"); // 以“GBK”编码创建zip文件，用来处理winRAR压缩的文件。
         Enumeration emu = zipFile.getEntries();
         while (emu.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) emu.nextElement();
+            if (pattern != null){
+                //不符合正则，跳过
+                if (!pattern.matcher(entry.getName()).matches()){
+                    continue;
+                }
+            }
+            File file = new File(destFilePath + File.separator + entry.getName());
             if (entry.isDirectory()) {
-                File dir = new File(destFilePath + entry.getName());
-                if (!dir.exists()) {
-                    dir.mkdirs();
+                if (!file.exists()) {
+                    file.mkdirs();
                 }
                 continue;
             }
             BufferedInputStream bis = new BufferedInputStream(zipFile
                     .getInputStream(entry));
 
-            File file = new File(destFilePath + entry.getName());
             File parent = file.getParentFile();
             if (parent != null && (!parent.exists())) {
                 parent.mkdirs();
