@@ -16,10 +16,17 @@ public class PageInfo implements Serializable {
     private int pageNow = 1;    //当前页，默认为1
     private int pageSize = 10;  //每页显示的条数
     private int totalPage;      //总页数
+    private int totalNum;       //总数量
     private String url;         //页面的完整url地址
 
     public static void setToModal(PageInfo pageInfo, Model modal){
         modal.addAttribute("page", pageInfo);
+    }
+
+    public static void setToModal(PageModal pageModal, Model modal){
+        if (pageModal != null){
+            modal.addAttribute("page", pageModal.getPageInfo());
+        }
     }
 
     public PageInfo() {
@@ -67,6 +74,10 @@ public class PageInfo implements Serializable {
         return this;
     }
 
+    public int getTotalNum() {
+        return totalNum;
+    }
+
     public int getTotalPage() {
         return totalPage;
     }
@@ -76,6 +87,7 @@ public class PageInfo implements Serializable {
         if (totalCount != null){
             value = totalCount.intValue();
         }
+        this.totalNum = value;
         if (value % pageSize == 0) {
             this.totalPage = value / pageSize;
         } else {

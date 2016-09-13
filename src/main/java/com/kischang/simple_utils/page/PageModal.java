@@ -12,8 +12,17 @@ import java.util.List;
  * @since 1.0
  */
 public class PageModal<T> implements java.io.Serializable {
+
     private PageInfo pageInfo;
     private List<T> data;
+
+    public PageModal() {
+    }
+
+    public PageModal(PageInfo pageInfo, List<T> data) {
+        this.pageInfo = pageInfo;
+        this.data = data;
+    }
 
     public PageInfo getPageInfo() {
         return pageInfo;
