@@ -19,7 +19,7 @@
         <scala.version>2.11.8</scala.version>
 
         <file-charset>UTF-8</file-charset>
-        <jdk-version>1.7</jdk-version>
+        <jdk-version>1.8</jdk-version>
         <skip-test>true</skip-test>
     </properties>
 
@@ -53,10 +53,18 @@
             <version>1.7.6</version>
         </dependency>
 
+        <!--Excel-->
         <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
+            <groupId>net.sourceforge.jexcelapi</groupId>
+            <artifactId>jxl</artifactId>
+            <version>2.6.12</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.11</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -136,28 +144,6 @@
                     <target>${jdk-version}</target>
                     <source>${jdk-version}</source>
                     <encoding>${file-charset}</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                        <configuration>
-                            <args>
-                                <arg>-dependencyfile</arg>
-                                <arg>${project.build.directory}/.scala_dependencies</arg>
-                            </args>
-                        </configuration>
-                    </execution>
-                </executions>
-                <configuration>
-                    <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>
         </plugins>

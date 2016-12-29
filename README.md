@@ -37,6 +37,13 @@ SimpleUtils
 > - ModelMessage （用于页面展示用的提示消息）
 
 --------------
+> **excel:**
+
+> - POIExportExcel poi xls 导出工具类
+> - ExcelReadWriteUtils jxl xls读取、导出工具类（导出不推荐用jxl，未实现格式控制）
+> - JxlExportExcel jxl xls导出工具类
+
+--------------
 
 > **taglib:**
 
