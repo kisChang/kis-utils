@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,9 +23,12 @@ import java.util.List;
 public class ExcelReadWriteUtils {
 
     //支持的列表
-    public static final List<String> SUPPORTLIST = Arrays.asList("xls");
+    public static final List<String> SUPPORTLIST = Collections.singletonList("xls");
 
-    public static boolean readExcel(File file, ReadLineValueInterface readline) {
+    public static boolean readExcel(File file, ReadLineValueInterface readlineHandler) {
+        return readExcel(file, readlineHandler, 0);
+    }
+    public static boolean readExcel(File file, ReadLineValueInterface readlineHandler, int rowStart) {
         Workbook wb = null;
         try {
             // 构造Workbook（工作薄）对象
@@ -33,10 +37,14 @@ public class ExcelReadWriteUtils {
             e.printStackTrace();
         }
 
-        return !readExcel(wb, readline);
+        return !readExcel(wb, readlineHandler, rowStart);
     }
 
-    public static boolean readExcel(InputStream inputStream, ReadLineValueInterface readline) {
+    public static boolean readExcel(InputStream inputStream, ReadLineValueInterface readlineHandler) {
+        return readExcel(inputStream, readlineHandler, 0);
+    }
+
+    public static boolean readExcel(InputStream inputStream, ReadLineValueInterface readlineHandler, int rowStart) {
         Workbook wb = null;
         try {
             // 构造Workbook（工作薄）对象
@@ -45,10 +53,10 @@ public class ExcelReadWriteUtils {
             e.printStackTrace();
         }
 
-        return !readExcel(wb, readline);
+        return !readExcel(wb, readlineHandler, rowStart);
     }
 
-    private static boolean readExcel(Workbook wb, ReadLineValueInterface readline) {
+    private static boolean readExcel(Workbook wb, ReadLineValueInterface readlineHandler, int rowStart) {
         if (wb == null)
             return true;
 
@@ -60,7 +68,7 @@ public class ExcelReadWriteUtils {
             for (int i = 0; i < sheet.length; i++) {
                 // 得到当前工作表的行数
                 int rowNum = sheet[i].getRows();
-                for (int j = 0; j < rowNum; j++) {
+                for (int j = rowStart; j < rowNum; j++) {
                     // 得到当前行的所有单元格
                     Cell[] cells = sheet[i].getRow(j);
                     if (cells != null && cells.length > 0) {
@@ -71,7 +79,7 @@ public class ExcelReadWriteUtils {
                             str[k] = cells[k].getContents();
                         }
                         // 调用接口处理
-                        if (!readline.readLineValue(str,j,sheet[i].getName())){
+                        if (!readlineHandler.readLineValue(str,j,sheet[i].getName())){
                             break;
                         }
                     }

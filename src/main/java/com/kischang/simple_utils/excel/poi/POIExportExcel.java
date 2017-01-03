@@ -209,8 +209,8 @@ public class POIExportExcel {
     /**
      * 转到指定Sheet
      */
-    public POIExportExcel toSheet(String grade) {
-        this.sheet = this.wb.getSheet(grade);
+    public POIExportExcel toSheet(String sheetName) {
+        this.sheet = this.wb.getSheet(sheetName);
         this.rowIndex = 0;
         return this;
     }
