@@ -202,6 +202,15 @@ public class POIExportExcel {
     }
 
     /**
+     * 转到指定Sheet
+     */
+    public POIExportExcel toSheet(String grade) {
+        this.sheet = this.wb.getSheet(grade);
+        this.nowRow = this.sheet.createRow(0);
+        return this;
+    }
+
+    /**
      * 在当前行后追加一行
      */
     public POIExportExcel newRow() {
