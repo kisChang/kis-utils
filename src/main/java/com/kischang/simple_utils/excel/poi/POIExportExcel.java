@@ -26,7 +26,6 @@ public class POIExportExcel {
     public POIExportExcel() {
         super();
         this.wb = new HSSFWorkbook();
-        newSheet();
     }
 
     public POIExportExcel(String sheetName) {
@@ -38,7 +37,6 @@ public class POIExportExcel {
     public POIExportExcel(HSSFWorkbook wb) {
         super();
         this.wb = wb;
-        newSheet();
     }
 
     public POIExportExcel(HSSFWorkbook wb, String sheetName) {
@@ -63,14 +61,14 @@ public class POIExportExcel {
      * @param cellStyle  报表字体样式
      */
     public POIExportExcel createHead(String headString, int colSum, HSSFCellStyle cellStyle) {
-        HSSFRow row = sheet.createRow(0);
+        HSSFRow row = getSheet().createRow(0);
         HSSFCell cell = row.createCell(0);
         row.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
         //定义单元格为字符串类型
         cell.setCellType(HSSFCell.ENCODING_UTF_16);
         cell.setCellValue(new HSSFRichTextString(headString));
         //合并区域
-        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, colSum));
+        getSheet().addMergedRegion(new CellRangeAddress(0, 0, 0, colSum));
         cell.setCellStyle(cellStyle);
         return this;
     }
@@ -93,7 +91,7 @@ public class POIExportExcel {
      * @param cellStyle 字体样式
      */
     public POIExportExcel createHeadTwo(String params, int colSum, HSSFCellStyle cellStyle) {
-        HSSFRow row1 = sheet.createRow(1);
+        HSSFRow row1 = getSheet().createRow(1);
         row1.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
 
         HSSFCell cell2 = row1.createCell(0);
@@ -102,7 +100,7 @@ public class POIExportExcel {
         cell2.setCellValue(new HSSFRichTextString(params));
 
         // 指定合并区域
-        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, colSum));
+        getSheet().addMergedRegion(new CellRangeAddress(1, 1, 0, colSum));
         cell2.setCellStyle(cellStyle);
         return this;
     }
@@ -159,7 +157,7 @@ public class POIExportExcel {
 
     public POIExportExcel createLastRow(int colSum, String[] cellValue, String name, HSSFCellStyle cellStyle) {
 
-        HSSFRow lastRow = sheet.createRow((short) (sheet.getLastRowNum() + 1));
+        HSSFRow lastRow = getSheet().createRow((short) (getSheet().getLastRowNum() + 1));
         lastRow.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
         HSSFCell sumCell = lastRow.createCell(0);
 
@@ -169,7 +167,7 @@ public class POIExportExcel {
         HSSFCellStyle sumCellStyle = POIStyleUtils.initNormalCellStyle(wb, cellStyle.getFont(wb).getFontName(), cellStyle.getFont(wb).getFontHeight(), false);
         sumCellStyle.setAlignment(HSSFCellStyle.ALIGN_RIGHT);
         sumCell.setCellStyle(sumCellStyle);
-        sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, colSum));// 指定合并区域
+        getSheet().addMergedRegion(new CellRangeAddress(getSheet().getLastRowNum(), getSheet().getLastRowNum(), 0, colSum));// 指定合并区域
 
         colSum++;
         for (int i = colSum; i < (cellValue.length + colSum); i++) {
@@ -179,7 +177,6 @@ public class POIExportExcel {
         }
         return this;
     }
-
 
     /**
      * 创建一个新的Sheet,使用默认命名
@@ -197,7 +194,7 @@ public class POIExportExcel {
         } else {
             this.sheet = this.wb.createSheet(sheetName);
         }
-        this.nowRow = this.sheet.createRow(0);
+        this.nowRow = this.getSheet().createRow(0);
         return this;
     }
 
@@ -206,7 +203,7 @@ public class POIExportExcel {
      */
     public POIExportExcel toSheet(String grade) {
         this.sheet = this.wb.getSheet(grade);
-        this.nowRow = this.sheet.createRow(0);
+        this.nowRow = this.getSheet().createRow(0);
         return this;
     }
 
@@ -214,7 +211,7 @@ public class POIExportExcel {
      * 在当前行后追加一行
      */
     public POIExportExcel newRow() {
-        this.nowRow = sheet.createRow(sheet.getLastRowNum() + 1);
+        this.nowRow = getSheet().createRow(getSheet().getLastRowNum() + 1);
         return this;
     }
 
@@ -247,7 +244,7 @@ public class POIExportExcel {
 
     /**行、列合并*/
     public POIExportExcel merge(int firstRow, int lastRow, int firstCol, int lastCol) {
-        this.sheet.addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
+        this.getSheet().addMergedRegion(new CellRangeAddress(firstRow, lastRow, firstCol, lastCol));
         return this;
     }
 
@@ -299,8 +296,11 @@ public class POIExportExcel {
         this.defaultFontSize = defaultFontSize;
     }
 
-    public HSSFSheet getSheet() {
-        return sheet;
+    private HSSFSheet getSheet(){
+        while (this.sheet == null){
+            newSheet();
+        }
+        return this.sheet;
     }
 
     public HSSFWorkbook getWb() {
