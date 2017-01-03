@@ -23,24 +23,23 @@ public class POIExportExcel {
     private HSSFSheet sheet = null;
     private HSSFRow nowRow = null;
 
+    // 行索引
+    private int rowIndex = 0;
+
     public POIExportExcel() {
-        super();
         this.wb = new HSSFWorkbook();
     }
 
     public POIExportExcel(String sheetName) {
-        super();
         this.wb = new HSSFWorkbook();
         newSheet(sheetName);
     }
 
     public POIExportExcel(HSSFWorkbook wb) {
-        super();
         this.wb = wb;
     }
 
     public POIExportExcel(HSSFWorkbook wb, String sheetName) {
-        super();
         this.wb = wb;
         newSheet(sheetName);
     }
@@ -61,6 +60,7 @@ public class POIExportExcel {
      * @param cellStyle  报表字体样式
      */
     public POIExportExcel createHead(String headString, int colSum, HSSFCellStyle cellStyle) {
+        this.rowIndex = 0;
         HSSFRow row = getSheet().createRow(0);
         HSSFCell cell = row.createCell(0);
         row.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
@@ -91,6 +91,7 @@ public class POIExportExcel {
      * @param cellStyle 字体样式
      */
     public POIExportExcel createHeadTwo(String params, int colSum, HSSFCellStyle cellStyle) {
+        this.rowIndex = 1;
         HSSFRow row1 = getSheet().createRow(1);
         row1.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
 
@@ -116,8 +117,9 @@ public class POIExportExcel {
      * @param columnHeader 标题字符串数组
      */
     public POIExportExcel createColumnHeader(int index, String[] columnHeader) {
+        this.rowIndex = 2;
         // 设置列头
-        HSSFRow row2 = this.newRow().getNowRow();
+        HSSFRow row2 = getSheet().createRow(2);
 
         // 指定行高
         row2.setHeight((short) (250 * 2));
@@ -157,7 +159,7 @@ public class POIExportExcel {
 
     public POIExportExcel createLastRow(int colSum, String[] cellValue, String name, HSSFCellStyle cellStyle) {
 
-        HSSFRow lastRow = getSheet().createRow((short) (getSheet().getLastRowNum() + 1));
+        HSSFRow lastRow = newRow().getNowRow();
         lastRow.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
         HSSFCell sumCell = lastRow.createCell(0);
 
@@ -194,7 +196,6 @@ public class POIExportExcel {
         } else {
             this.sheet = this.wb.createSheet(sheetName);
         }
-        this.nowRow = this.getSheet().createRow(0);
         return this;
     }
 
@@ -203,7 +204,6 @@ public class POIExportExcel {
      */
     public POIExportExcel toSheet(String grade) {
         this.sheet = this.wb.getSheet(grade);
-        this.nowRow = this.getSheet().createRow(0);
         return this;
     }
 
@@ -211,7 +211,8 @@ public class POIExportExcel {
      * 在当前行后追加一行
      */
     public POIExportExcel newRow() {
-        this.nowRow = getSheet().createRow(getSheet().getLastRowNum() + 1);
+        this.nowRow = getSheet().createRow(this.rowIndex);
+        this.rowIndex = getSheet().getLastRowNum() + 1;
         return this;
     }
 
@@ -225,7 +226,7 @@ public class POIExportExcel {
         return createCell(col, val, POIStyleUtils.initNormalCellStyle(this.wb, this.defaultFontFamily, this.defaultFontSize, false));
     }
     public POIExportExcel createCell(int col, String val, HSSFCellStyle cellStyle){
-        HSSFCell cell = this.nowRow.createCell(col);
+        HSSFCell cell = this.getNowRow().createCell(col);
         cell.setCellType(HSSFCell.ENCODING_UTF_16);
         cell.setCellValue(new HSSFRichTextString(val));
         cell.setCellStyle(cellStyle);
@@ -235,7 +236,7 @@ public class POIExportExcel {
         return createCell(col, val, POIStyleUtils.initNormalCellStyle(this.wb, this.defaultFontFamily, this.defaultFontSize, false));
     }
     public POIExportExcel createCell(int col, double val, HSSFCellStyle cellStyle){
-        HSSFCell cell = this.nowRow.createCell(col);
+        HSSFCell cell = this.getNowRow().createCell(col);
         cell.setCellType(HSSFCell.ENCODING_UTF_16);
         cell.setCellValue(val);
         cell.setCellStyle(cellStyle);
@@ -308,7 +309,10 @@ public class POIExportExcel {
     }
 
     public HSSFRow getNowRow() {
-        return nowRow;
+        while (this.nowRow == null){
+            newRow();
+        }
+        return this.nowRow;
     }
 
     public int getNowRowLine() {
