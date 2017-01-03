@@ -1,9 +1,9 @@
 package com.kischang.simple_utils.excel.poi;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * POI导出
@@ -15,9 +15,8 @@ public class POIExportExcelTest {
 
     public static void main(String[] args) throws Exception {
         InputStream in = POIExportExcelTest.class.getClassLoader().getResourceAsStream("student-list.xls");
-        HSSFWorkbook wb = new HSSFWorkbook(new POIFSFileSystem(in));
 
-        POIExportExcel exportExcel = new POIExportExcel(wb);
+        POIExportExcel exportExcel = new POIExportExcel(in);
         exportExcel.toSheet("Grade");
         exportExcel.newRow().createCell(0, "1");
         exportExcel.newRow().createCell(0, "2");

@@ -1,12 +1,10 @@
 package com.kischang.simple_utils.excel.poi;
 
 import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Collection;
 
 /**
@@ -32,6 +30,15 @@ public class POIExportExcel {
 
     public POIExportExcel(String sheetName) {
         this.wb = new HSSFWorkbook();
+        newSheet(sheetName);
+    }
+
+    public POIExportExcel(InputStream in) throws IOException {
+        this.wb = new HSSFWorkbook(new POIFSFileSystem(in));
+    }
+
+    public POIExportExcel(InputStream in, String sheetName) throws IOException {
+        this.wb = new HSSFWorkbook(new POIFSFileSystem(in));
         newSheet(sheetName);
     }
 
