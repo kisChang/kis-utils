@@ -165,7 +165,6 @@ public class POIExportExcel {
     }
 
     public POIExportExcel createLastRow(int colSum, String[] cellValue, String name, HSSFCellStyle cellStyle) {
-
         HSSFRow lastRow = newRow().getNowRow();
         lastRow.setHeight((short) (cellStyle.getFont(wb).getFontHeight() * 2));
         HSSFCell sumCell = lastRow.createCell(0);
@@ -203,6 +202,7 @@ public class POIExportExcel {
         } else {
             this.sheet = this.wb.createSheet(sheetName);
         }
+        this.rowIndex = 0;
         return this;
     }
 
@@ -211,6 +211,7 @@ public class POIExportExcel {
      */
     public POIExportExcel toSheet(String grade) {
         this.sheet = this.wb.getSheet(grade);
+        this.rowIndex = 0;
         return this;
     }
 
