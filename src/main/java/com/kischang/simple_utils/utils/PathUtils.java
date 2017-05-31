@@ -74,11 +74,25 @@ public class PathUtils {
         return appendFileName(new StringBuilder(classpath),fileName);
     }
 
-    public static String appendFileName(StringBuilder sb, String[] fileName) {
-        for (String str : fileName){
-            sb.append(str);
+    public static String appendFileName(StringBuilder sb, Object[] fileName) {
+        for (int i=0 ; i< fileName.length ; i++) {
+            String str = String.valueOf(fileName[i]);
+            if (File.separator.equals(str)){
+                sb.append(File.separator);
+            } else {
+                str = str.replace("../", "").replace("./", "");
+                sb.append(str);
+                if (i < fileName.length-1){
+                    sb.append(File.separator);
+                }
+            }
         }
-        return sb.toString().replace("../", "").replace("./", "");
+        return sb.toString();
+    }
+
+    public static String appendFileName(Object... fileName) {
+        StringBuilder sb = new StringBuilder();
+        return appendFileName(sb, fileName);
     }
 
 }
