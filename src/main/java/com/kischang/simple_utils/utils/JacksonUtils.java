@@ -1,6 +1,9 @@
 package com.kischang.simple_utils.utils;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
@@ -15,14 +18,27 @@ import java.util.Map;
  */
 public class JacksonUtils {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper omBase = new ObjectMapper();
+
+    private static final ObjectMapper OmIgnoreUnknow = new ObjectMapper().setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+    static {
+        OmIgnoreUnknow.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public static ObjectMapper getOmBase(){
+        return omBase;
+    }
+
+    public static ObjectMapper getOmIgnoreUnknow(){
+        return OmIgnoreUnknow;
+    }
 
     /**
      * javaBean,list,array convert to json string
      */
     public static String obj2Json(Object obj){
         try {
-            return objectMapper.writeValueAsString(obj);
+            return omBase.writeValueAsString(obj);
         } catch (IOException ignored) {
         }
         return "";
@@ -31,23 +47,29 @@ public class JacksonUtils {
     /**
      * json string convert to javaBean
      */
-    public static <T> T json2Pojo(String jsonStr, Class<T> clazz){
+    public static <T> T json2Pojo(ObjectMapper om, String jsonStr, Class<T> clazz){
         try {
-            return objectMapper.readValue(jsonStr, clazz);
+            return om.readValue(jsonStr, clazz);
         } catch (IOException ignored) {
         }
         return null;
+    }
+    public static <T> T json2Pojo(String jsonStr, Class<T> clazz){
+        return json2Pojo(getOmBase(), jsonStr, clazz);
     }
 
     /**
      * json string convert to map
      */
-    public static Map json2Map(String jsonStr){
+    public static Map json2Map(ObjectMapper om, String jsonStr){
         try {
-            return objectMapper.readValue(jsonStr, Map.class);
+            return om.readValue(jsonStr, Map.class);
         } catch (IOException ignored) {
         }
         return null;
+    }
+    public static Map json2Map(String jsonStr){
+        return json2Map(getOmBase(), jsonStr);
     }
 
     /**
@@ -57,24 +79,27 @@ public class JacksonUtils {
      * @param <T>       目标
      * @return          结果
      */
-    public static <T> T jsonToType(String jsonStr,TypeReference<T> type){
+    public static <T> T jsonToType(ObjectMapper om, String jsonStr,TypeReference<T> type){
         if (jsonStr == null || "".equals(jsonStr.trim())){
             return null;
         }
         try {
-            return objectMapper.readValue(jsonStr,type);
-        } catch (IOException ignored) {
-        }
+            return om.readValue(jsonStr,type);
+        } catch (IOException ignored) { }
         return null;
+    }
+
+    public static <T> T jsonToType(String jsonStr,TypeReference<T> type){
+        return jsonToType(getOmBase(), jsonStr, type);
     }
 
     /**
      * json string convert to map with javaBean
      */
-    public static <T> Map<String, T> json2Map(String jsonStr, Class<T> clazz){
+    public static <T> Map<String, T> json2Map(ObjectMapper om, String jsonStr, Class<T> clazz){
         Map<String, Map<String, Object>> map = null;
         try {
-            map = objectMapper.readValue(jsonStr,
+            map = om.readValue(jsonStr,
                     new TypeReference<Map<String, T>>() {
                     });
         } catch (IOException ignored) {
@@ -86,29 +111,38 @@ public class JacksonUtils {
         }
         return result;
     }
+    public static <T> Map<String, T> json2Map(String jsonStr, Class<T> clazz){
+        return json2Map(getOmBase(), jsonStr, clazz);
+    }
 
-    public static <K,V> Map<K, V> json2EasyMap(String jsonStr, Class<K> clazzK, Class<V> clazzV){
+    public static <K,V> Map<K, V> json2EasyMap(ObjectMapper om, String jsonStr, Class<K> clazzK, Class<V> clazzV){
         Map<K, V> map = null;
         try {
-            map = objectMapper.readValue(jsonStr, new TypeReference<Map<K, V>>() {});
+            map = om.readValue(jsonStr, new TypeReference<Map<K, V>>() {});
         } catch (IOException ignored) {
         }
         return map;
     }
+    public static <K,V> Map<K, V> json2EasyMap(String jsonStr, Class<K> clazzK, Class<V> clazzV){
+        return json2EasyMap(getOmBase(), jsonStr, clazzK, clazzV);
+    }
 
-    public static <K,V> Map<K, List<V>> json2ArrMap(String data, Class<K> kClass, Class<V> vClass) {
+    public static <K,V> Map<K, List<V>> json2ArrMap(ObjectMapper om, String data, Class<K> kClass, Class<V> vClass) {
         Map<K, List<V>> map = null;
         try {
-            map = objectMapper.readValue(data, new TypeReference<Map<K, List<V>>>() {});
+            map = om.readValue(data, new TypeReference<Map<K, List<V>>>() {});
         } catch (IOException ignored) {
         }
         return map;
     }
+    public static <K,V> Map<K, List<V>> json2ArrMap(String data, Class<K> kClass, Class<V> vClass) {
+        return json2ArrMap(getOmBase(), data, kClass, vClass);
+    }
 
-    public static <K,V> Map<K, V> json2PojoMap(String jsonStr, Class<K> clazzK, Class<V> clazzV){
+    public static <K,V> Map<K, V> json2PojoMap(ObjectMapper om, String jsonStr, Class<K> clazzK, Class<V> clazzV){
         Map<K, Map<String, Object>> map = null;
         try {
-            map = objectMapper.readValue(jsonStr,
+            map = om.readValue(jsonStr,
                     new TypeReference<Map<K, Map<String, Object>>>() {
                     });
         } catch (IOException ignored) {
@@ -120,14 +154,17 @@ public class JacksonUtils {
         }
         return result;
     }
+    public static <K,V> Map<K, V> json2PojoMap(String jsonStr, Class<K> clazzK, Class<V> clazzV){
+        return json2PojoMap(getOmBase(), jsonStr, clazzK, clazzV);
+    }
 
     /**
      * json array string convert to list with javaBean
      */
-    public static <T> List<T> json2List(String jsonArrayStr, Class<T> clazz){
+    public static <T> List<T> json2List(ObjectMapper om, String jsonArrayStr, Class<T> clazz){
         List<Map<String, Object>> list = null;
         try {
-            list = objectMapper.readValue(jsonArrayStr,
+            list = om.readValue(jsonArrayStr,
                     new TypeReference<List<T>>() {
                     });
         } catch (IOException ignored) {
@@ -140,10 +177,18 @@ public class JacksonUtils {
         return result;
     }
 
+    public static <T> List<T> json2List(String jsonArrayStr, Class<T> clazz){
+        return json2List(getOmBase(), jsonArrayStr, clazz);
+    }
+
     /**
      * map convert to javaBean
      */
+    public static <T> T map2pojo(ObjectMapper om, Map map, Class<T> clazz) {
+        return om.convertValue(map, clazz);
+    }
+
     public static <T> T map2pojo(Map map, Class<T> clazz) {
-        return objectMapper.convertValue(map, clazz);
+        return map2pojo(getOmBase(), map, clazz);
     }
 }
