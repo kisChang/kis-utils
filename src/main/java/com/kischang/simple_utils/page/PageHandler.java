@@ -18,7 +18,7 @@ public class PageHandler {
 
         int getNowPage();
 
-        Collection<T> execFind(PageInfo pageInfo);
+        Collection<T> execFind(PageInfo pageInfo) throws Exception;
 
         void execBatch(Collection<T> data, int pageNow, int totalPage) throws Exception;
     }

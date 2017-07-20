@@ -11,7 +11,7 @@
     </parent>
     <groupId>com.kischang</groupId>
     <artifactId>SimpleUtils</artifactId>
-    <version>0.2</version>
+    <version>0.3-SNAPSHOT</version>
 
     <description>
         常用工具类整理
@@ -29,6 +29,13 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.6</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.ant</groupId>
