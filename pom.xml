@@ -7,11 +7,11 @@
     <parent>
         <groupId>com.temsoft</groupId>
         <artifactId>temsoft-parent</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </parent>
     <groupId>com.kischang</groupId>
     <artifactId>SimpleUtils</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
 
     <description>
         常用工具类整理
