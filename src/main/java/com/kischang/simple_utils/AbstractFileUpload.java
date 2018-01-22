@@ -40,6 +40,14 @@ public abstract class AbstractFileUpload {
      */
     protected abstract String getUploadPath(String accessPath);
 
+
+    /**
+     * 文件上传完成后调用的方法
+     */
+    protected boolean parseUploadFile(Long uId, String accessPath, File saveFile, HttpServletRequest request) {
+        return true;
+    }
+
     /**
      * @param fileName  文件名称
      * @return          存储路径
@@ -59,10 +67,18 @@ public abstract class AbstractFileUpload {
      */
     protected abstract String getFileName(MultipartFile file, HttpServletRequest request);
 
+
     @RequestMapping("/uploadPic")
     public
     @ResponseBody
-    ResponseData uploadGoodsPic(@RequestParam MultipartFile file, HttpServletRequest request){
+    ResponseData uploadFilePic(@RequestParam MultipartFile file, HttpServletRequest request){
+        return uploadFile(file, request);
+    }
+
+    @RequestMapping("/upload")
+    public
+    @ResponseBody
+    ResponseData uploadFile(@RequestParam MultipartFile file, HttpServletRequest request){
         if (!beforeMethod()){
             return new ResponseData(false, "不允许的操作！", -1);
         }
@@ -70,14 +86,15 @@ public abstract class AbstractFileUpload {
             return new ResponseData(false, "文件为空！", -1);
         }
         if (!getUploadFileType().containsKey(file.getContentType())){
-            return new ResponseData(false, "请选择jpeg、jpg、png类型的图片！", -1);
+            return new ResponseData(false, "请选择[" + getUploadFileType().values() + "]类型的图片！", -1);
         }
         String fileName = getFileName(file, request);
         String accessPath = f2a(getAccessPath(fileName));
         String savePath = a2f(getUploadPath(accessPath));
         OutputStream os = null;
+        File saveFile;
         try {
-            File saveFile = new File(savePath);
+            saveFile = new File(savePath);
             if(!saveFile.getParentFile().exists()){
                 saveFile.getParentFile().mkdirs();
             }
@@ -95,14 +112,25 @@ public abstract class AbstractFileUpload {
             map.put("uId", uId);
         }
         map.put("accessPath", accessPath);
-        return new ResponseData<Map<String,Object>>(true, accessPath, 0).setContent(map);
+        if (parseUploadFile(uId, accessPath, saveFile, request)){
+            return new ResponseData<Map<String,Object>>(true, accessPath, 0).setContent(map);
+        }else {
+            return new ResponseData<Map<String,Object>>(false, "上传失败！", -2);
+        }
     }
 
     /**删除已上传的文件*/
     @RequestMapping("/uploadPicDel")
     public
     @ResponseBody
-    ResponseData uploadGoodsPicDel(Long uId, String picName, HttpServletRequest request){
+    ResponseData uploadPicDel(Long uId, String picName, HttpServletRequest request){
+        return uploadFileDel(uId, picName, request);
+    }
+
+    @RequestMapping("/uploadDel")
+    public
+    @ResponseBody
+    ResponseData uploadFileDel(Long uId, String picName, HttpServletRequest request){
         if (!beforeMethod()){
             return new ResponseData(false, "不允许的操作！", -1);
         }
