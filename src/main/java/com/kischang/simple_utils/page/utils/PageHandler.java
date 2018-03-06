@@ -1,29 +1,17 @@
-package com.kischang.simple_utils.page;
+package com.kischang.simple_utils.page.utils;
 
 
-import java.util.Collection;
+import com.kischang.simple_utils.page.PageInfo;
 
 /**
  * 分页查询处理
  *
  * @author KisChang
- * @version 1.0
- * @date 2016年03月01日
- * @since 1.0
+ * @version 3.1.2
  */
 public class PageHandler {
 
-    //处理函数
-    public static interface Handler<T>{
-
-        int getNowPage();
-
-        Collection<T> execFind(PageInfo pageInfo) throws Exception;
-
-        void execBatch(Collection<T> data, int pageNow, int totalPage) throws Exception;
-    }
-
-    public static <T> void pageBatch(int pageSize, Handler<T> handler) throws Exception{
+    public static <T> void pageBatch(int pageSize, Handler<T> handler) throws Exception {
         PageInfo pageInfo = new PageInfo(pageSize);
         do {
             pageInfo.setPageNow(
