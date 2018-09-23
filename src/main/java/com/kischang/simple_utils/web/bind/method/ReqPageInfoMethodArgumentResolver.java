@@ -62,6 +62,7 @@ public class ReqPageInfoMethodArgumentResolver implements HandlerMethodArgumentR
         }catch (Exception ignored){
         }
         request.setAttribute("page",pageInfo);
+        mavContainer.getModel().addAttribute("page", pageInfo);
         return pageInfo;
     }
 }
