@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ public class HttpUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpUtils.class);
 
+    private static final Charset def_charset = Charset.forName("UTF-8");
     private static HttpClient HTTP_CLIENT = null;
     static {
         HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -37,16 +39,22 @@ public class HttpUtils {
     }
 
     public static String getData(String url){
-        return getData(HTTP_CLIENT, url);
+        return getData(url, def_charset);
+    }
+    public static String getData(String url, Charset charset){
+        return getData(HTTP_CLIENT, url, charset);
     }
 
     public static String getData(HttpClient httpclient, String url){
+        return getData(httpclient, url, def_charset);
+    }
+    public static String getData(HttpClient httpclient, String url, Charset charset){
         HttpGet httpGet = new HttpGet(url);
         try {
             HttpResponse response = httpclient.execute(httpGet);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                return IOUtils.toString(entity.getContent());
+                return EntityUtils.toString(entity, charset);
             }
             httpGet.abort();
         } catch (IOException e) {
@@ -69,10 +77,18 @@ public class HttpUtils {
     }
 
     public static String postData(String url, Map<String, Object> data) {
-        return postData(HTTP_CLIENT, url, data);
+        return postData(url, data, def_charset);
     }
 
+    public static String postData(String url, Map<String, Object> data, Charset charset) {
+        return postData(HTTP_CLIENT, url, data, charset);
+    }
+
+
     public static String postData(HttpClient httpclient, String url, Map<String, Object> data) {
+        return postData(httpclient, url, data, def_charset);
+    }
+    public static String postData(HttpClient httpclient, String url, Map<String, Object> data, Charset charset) {
         HttpPost post = new HttpPost(url);
 
         try {
@@ -81,13 +97,13 @@ public class HttpUtils {
                 for(Map.Entry<String, Object> entry : data.entrySet()) {
                     nvps.add(new BasicNameValuePair(entry.getKey(), String.valueOf(entry.getValue())));
                 }
-                post.setEntity(new UrlEncodedFormEntity(nvps, Charset.forName("UTF-8")));
+                post.setEntity(new UrlEncodedFormEntity(nvps, charset));
             }
 
             HttpResponse response = httpclient.execute(post);
             HttpEntity entity = response.getEntity();
             if (entity != null) {
-                return IOUtils.toString(entity.getContent());
+                return EntityUtils.toString(entity, charset);
             }
             post.abort();
         } catch (IOException e) {
