@@ -121,7 +121,7 @@ public abstract class UEditorPicUploadAbstractBase {
                     + fileName ;
             String savePath = getUploadSave(accessPath);
 
-            State storageState = StorageManager.saveBinaryFile(data, savePath);
+            State storageState = new StorageManager().saveBinaryFile(data, savePath, "");
             if(storageState.isSuccess()) {
                 storageState.putInfo("url", accessPath);
                 storageState.putInfo("type", "JPG");

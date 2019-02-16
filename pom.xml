@@ -4,14 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.temsoft</groupId>
-        <artifactId>temsoft-parent</artifactId>
-        <version>1.1</version>
-    </parent>
     <groupId>com.kischang</groupId>
-    <artifactId>SimpleUtils</artifactId>
-    <version>0.3.4-SNAPSHOT</version>
+    <artifactId>kis-utils</artifactId>
+    <version>0.3.5-SNAPSHOT</version>
 
     <description>
         常用工具类整理
@@ -52,9 +47,9 @@
             <optional>false</optional>
         </dependency>
         <dependency>
-            <groupId>com.baidu</groupId>
+            <groupId>com.gitee.qdbp.thirdparty</groupId>
             <artifactId>ueditor</artifactId>
-            <version>1.1.2</version>
+            <version>1.4.3.3</version>
             <scope>compile</scope>
             <optional>false</optional>
         </dependency>
@@ -160,4 +155,17 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>rdc-releases</id>
+            <name>nexus-releases</name>
+            <url>https://repo.rdc.aliyun.com/repository/52028-release-3c4LB0/</url>
+        </repository>
+        <snapshotRepository>
+            <id>rdc-snapshots</id>
+            <name>rdc-snapshots</name>
+            <url>https://repo.rdc.aliyun.com/repository/52028-snapshot-HkSppH/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
