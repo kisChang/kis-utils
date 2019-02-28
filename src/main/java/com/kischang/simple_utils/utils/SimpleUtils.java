@@ -1,5 +1,7 @@
 package com.kischang.simple_utils.utils;
 
+import com.baidu.ueditor.define.State;
+import com.baidu.ueditor.upload.StorageManager;
 import com.kischang.simple_utils.formbean.ResponseData;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.IOUtils;
@@ -19,6 +21,10 @@ import java.util.*;
  * @version 1.0
  */
 public class SimpleUtils {
+
+    public static State saveBinaryFile(byte[] data, String savePath){
+        return new StorageManager().saveBinaryFile(data, savePath, "");
+    }
 
     /**
      * 排序，默认升序
