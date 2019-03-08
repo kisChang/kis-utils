@@ -24,7 +24,7 @@ public class ToastMessage extends JFrame {
     private JLabel msgLabel;
     private JPanel jPanel;
 
-    private ToastMessage(final String message, long time) {
+    ToastMessage(final String message, long time) {
         //之前需要调用一下
         this.time = time;
 

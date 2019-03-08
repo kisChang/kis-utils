@@ -1,7 +1,5 @@
 package com.kischang.simple_utils.awt;
 
-import com.kischang.simple_utils.utils.OS;
-
 import java.awt.*;
 
 /**
@@ -25,11 +23,10 @@ public class NotifyUtils {
     }
 
     public static void displayMessage(String title, String msg, long time, TrayIcon.MessageType messageType) {
-        if(OS.isFamilyUnix()){
-            System.out.println("MSG:" + msg);
-        }
         if (Desktop.isDesktopSupported()){
             ToastMessage.mk(msg, time).display();
+        }else {
+            System.out.println("MSG:" + msg);
         }
     }
 
