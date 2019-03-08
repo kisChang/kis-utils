@@ -49,3 +49,8 @@ SimpleUtils
 
 > - 常用工具方法URI： http://kischang.com/util-functions
 > - 微信JS-SDK 工具URI： http://kischang.com/util-functions
+
+--------------
+> **awt:**
+
+> - 仿Toast：ToastMessage
