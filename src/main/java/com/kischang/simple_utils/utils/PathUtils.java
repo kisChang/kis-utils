@@ -3,6 +3,7 @@ package com.kischang.simple_utils.utils;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 
 /**
  * 各种目录工具方法
@@ -11,6 +12,47 @@ import java.net.URL;
  * @version 1.0
  */
 public class PathUtils {
+
+    /**获取程序运行目录*/
+    private static String RUN_PATH = null;
+    public synchronized static String getRunPath() {
+        if (RUN_PATH == null){
+            URL url = PathUtils.class.getProtectionDomain().getCodeSource().getLocation();
+            String filePath = "";
+            try {
+                filePath = URLDecoder.decode(url.getFile(), "utf-8");// 转化为utf-8编码
+            } catch (Exception ignored) {
+            }
+            //jar文件的话，可能是这个开头，需要去除
+            if ("jar".equals(url.getProtocol()) && filePath.startsWith("file:")){
+                filePath = filePath.substring(5);
+            }
+
+            if (filePath.endsWith(".jar")) {// 可执行jar包运行的结果里包含".jar"
+                // 截取路径中的jar包名
+                filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
+            }
+            String tmp = ".jar!/BOOT-INF/classes!/";
+            if (filePath.endsWith(tmp)) {// spring打包的是这个后缀
+                // 截取路径中的多余部分
+                filePath = filePath.substring(0, filePath.lastIndexOf(tmp));
+            }
+            File file = new File(filePath);
+            RUN_PATH = file.getAbsolutePath();//得到windows下的正确路径
+        }
+        return RUN_PATH;
+    }
+
+    public static String linkPath(String... paths) {
+        StringBuilder sb = new StringBuilder();
+        for (String once : paths) {
+            sb.append(once);
+            if (!once.endsWith(File.separator)) {
+                sb.append(File.separator);
+            }
+        }
+        return sb.toString();
+    }
 
     public static String getWebInfPath(String... fileName){
         URL url = Thread.currentThread().getContextClassLoader().getResource("");
