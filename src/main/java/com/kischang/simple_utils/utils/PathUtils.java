@@ -16,8 +16,12 @@ public class PathUtils {
     /**获取程序运行目录*/
     private static String RUN_PATH = null;
     public synchronized static String getRunPath() {
+        return getRunPath(PathUtils.class);
+    }
+
+    public synchronized static String getRunPath(Class clzss) {
         if (RUN_PATH == null){
-            URL url = PathUtils.class.getProtectionDomain().getCodeSource().getLocation();
+            URL url = clzss.getProtectionDomain().getCodeSource().getLocation();
             String filePath = "";
             try {
                 filePath = URLDecoder.decode(url.getFile(), "utf-8");// 转化为utf-8编码
