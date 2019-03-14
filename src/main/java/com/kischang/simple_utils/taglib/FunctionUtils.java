@@ -46,17 +46,16 @@ public class FunctionUtils {
         if (str.length() < start){
             return str;
         }
-        StringBuilder sb = new StringBuilder();
-        sb.append(str.substring(0, start));
-        char[] chars = str.toCharArray();
-        for (int i=start ; i < str.length() ; i ++){
-            if(chars[i] == ch){
-                sb.append(str.substring(i));
-                break;
-            }
+        String tmp = str.substring(0, start);
+        if (tmp.contains(String.valueOf(ch))){
+            return str;
+        }else {
+            StringBuilder sb = new StringBuilder();
+            sb.append(tmp);
             sb.append(replace);
+            sb.append(str, str.indexOf(ch), str.length());
+            return sb.toString();
         }
-        return sb.toString();
     }
 
     /**
@@ -72,7 +71,7 @@ public class FunctionUtils {
             return str;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append(str.substring(0, start));
+        sb.append(str, 0, start);
         if( str.length() < (start + hideNum) ){
             appendRepStr(sb, str.length() - start, replace);
             return sb.toString();
