@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public abstract class UEditorPicUploadAbstractBase {
 
+    //浏览器下面的分割线
+    private static final String separator = "/";
+
     protected abstract String getUploadSave(String path);
 
     protected abstract long getUserId(HttpSession session);
@@ -75,7 +78,7 @@ public abstract class UEditorPicUploadAbstractBase {
         }
         String fileName = System.currentTimeMillis() + getPicTypeMap().get(upfile.getContentType());
         String accessPath = getPicPath()
-                + userId + File.separator
+                + userId + separator
                 + fileName ;
         String savePath = getUploadSave(accessPath);
         OutputStream os = null;
@@ -117,7 +120,7 @@ public abstract class UEditorPicUploadAbstractBase {
         } else {
             String fileName = System.currentTimeMillis() + ".jpg";
             String accessPath = getPicPath()
-                    + userId + File.separator
+                    + userId + separator
                     + fileName ;
             String savePath = getUploadSave(accessPath);
 
