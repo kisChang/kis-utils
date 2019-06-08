@@ -781,7 +781,7 @@ public class BytesUtils
 	 */
 	public static byte[] getMD5(String str)
 	{
-		return getMD5(str.getBytes());
+		return getMD5(str.getBytes(DEF_CHARTSET));
 	}
 
 	/**
@@ -904,7 +904,7 @@ public class BytesUtils
 	public static String getSha1(String tmp) {
 		return bytes2hex(
 				getShaDigest().digest(
-						tmp.getBytes(Charset.forName("utf-8"))
+						tmp.getBytes(DEF_CHARTSET)
 				)
 		);
 	}
@@ -915,6 +915,12 @@ public class BytesUtils
 						tmp
 				)
 		);
+	}
+
+	private static Charset DEF_CHARTSET = Charset.forName("UTF-8");
+
+	public static void setDefChartset(Charset defChartset) {
+		DEF_CHARTSET = defChartset;
 	}
 
 	private BytesUtils(){}
