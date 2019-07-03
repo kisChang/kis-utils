@@ -25,15 +25,6 @@ public class ZipUtilApache {
      */
     public static void zip(String packPath, String destZipPath, String destZipName, String encoding)
             throws Exception {
-        File inputFile = new File(packPath);
-        // 1. 先生成压缩列表（防止目标目录还在这把压缩后的文件也打包进来）
-        File[] zipFileList;
-        if (inputFile.isDirectory()){
-            zipFileList = inputFile.listFiles();
-        }else {
-            zipFileList = new File[]{ inputFile };
-        }
-
         // 创建压缩文件
         File destDir = new File(destZipPath);
         if (!destDir.exists()) {
@@ -49,21 +40,34 @@ public class ZipUtilApache {
             destFile.delete();
         }
 
+        zip(packPath, new FileOutputStream(destFile), destFile.getPath(), encoding);
+    }
+
+    public static void zip(String packPath, OutputStream outputStream, String filterName, String encoding)
+            throws Exception {
+        File inputFile = new File(packPath);
+        // 1. 先生成压缩列表（防止目标目录还在这把压缩后的文件也打包进来）
+        File[] zipFileList;
+        if (inputFile.isDirectory()){
+            zipFileList = inputFile.listFiles();
+        }else {
+            zipFileList = new File[]{ inputFile };
+        }
+
         // 递归压缩方法
         ZipOutputStream out = null;
         try {
-            out = new ZipOutputStream(new FileOutputStream(destFile));
+            out = new ZipOutputStream(outputStream);
             if (encoding != null){
                 out.setEncoding(encoding);
             }
             assert zipFileList != null;
             for (File file : zipFileList){
-                if (file.equals(destFile)){
+                if (filterName != null && filterName.equals(file.getPath())){
                     continue;
                 }
                 zip(out, file, file.getName());
             }
-            logger.debug("zip done {}", destFile);
         }finally {
             IOUtils.closeQuietly(out);
         }

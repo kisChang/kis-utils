@@ -9,11 +9,23 @@ import java.security.SecureRandom;
 /**
  * DES 加密解密工具类
  *
- * Create By KisChang On 2016-05-24
- *
  * @version 1.0
  */
 public class DESUtils {
+
+    public static Cipher getDesCipher(String password) throws Exception {
+        SecureRandom random = new SecureRandom();
+        //加密流
+        DESKeySpec desKey = new DESKeySpec(password.getBytes());
+        //创建一个密匙工厂，然后用它把DESKeySpec转换成
+        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+        SecretKey securekey = keyFactory.generateSecret(desKey);
+        //Cipher对象实际完成加密操作
+        Cipher cipher = Cipher.getInstance("DES");
+        //用密匙初始化Cipher对象,ENCRYPT_MODE用于将 Cipher 初始化为加密模式的常量
+        cipher.init(Cipher.ENCRYPT_MODE, securekey, random);
+        return cipher;
+    }
 
     //DES算法密钥
     private byte[] des_key = { 21, 1, -110, 82, -32, -85, -128, -65 };
