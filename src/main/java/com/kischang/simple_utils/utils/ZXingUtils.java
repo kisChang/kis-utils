@@ -4,12 +4,18 @@ import com.google.zxing.*;
 import com.google.zxing.Reader;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitArray;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.common.HybridBinarizer;
 import com.google.zxing.multi.GenericMultipleBarcodeReader;
 import com.google.zxing.multi.MultipleBarcodeReader;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
@@ -20,8 +26,6 @@ import java.util.*;
  *
  * @author KisChang
  * @version 1.0
- * @date 2015年12月03日
- * @since 1.0
  */
 public class ZXingUtils {
 
@@ -45,7 +49,13 @@ public class ZXingUtils {
         static {
             HINTS = new EnumMap<EncodeHintType,Object>(EncodeHintType.class);
             HINTS.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+            HINTS.put(EncodeHintType.MARGIN, 1);
         }
+
+        public static Map<EncodeHintType, Object> getDefHints(){
+            return new EnumMap<EncodeHintType, Object>(HINTS);
+        }
+
         /**
          * 生成二维码
          * @param widthAndHeight    高宽
@@ -53,7 +63,9 @@ public class ZXingUtils {
          * @param os                输出流
          */
         public static void buildQRCode(int widthAndHeight, String content, OutputStream os, ImageType imageType) throws WriterException, IOException {
-            BitMatrix bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight, HINTS);// 生成矩阵
+            Map<EncodeHintType, Object> hintsMap = getDefHints();
+            BitMatrix bitMatrix = new MultiFormatWriter()
+                    .encode(content, BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight, hintsMap);// 生成矩阵
             MatrixToImageWriter.writeToStream(bitMatrix, imageType.getValue(), os);
         }
 
@@ -70,8 +82,9 @@ public class ZXingUtils {
          * @param imageType         输出文件类型
          */
         public static void buildQRCode(int widthAndHeight, String content, String filePath, String fileName, ImageType imageType) throws WriterException, IOException {
-            BitMatrix bitMatrix = new MultiFormatWriter().encode(content,
-                    BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight, HINTS);
+            Map<EncodeHintType, Object> hintsMap = getDefHints();
+            BitMatrix bitMatrix = new MultiFormatWriter()
+                    .encode(content, BarcodeFormat.QR_CODE, widthAndHeight, widthAndHeight, hintsMap);
             Path path = FileSystems.getDefault().getPath(filePath, fileName);
             MatrixToImageWriter.writeToPath(bitMatrix, imageType.getValue(), path);// 输出图像
         }
@@ -79,6 +92,190 @@ public class ZXingUtils {
         public static void buildQRCode(String content, String filePath, String fileName, ImageType imageType) throws WriterException, IOException {
             buildQRCode(200, content,filePath,fileName,imageType);
         }
+    }
+
+    public static class QrCodeBuilder {
+        public static final int BLACK = 0xFF000000;
+        public static final int WHITE = 0xFFFFFFFF;
+
+        private String content;
+        private ImageType imageType = ImageType.JPEG;
+        private int widthAndHeight = 200;
+        private Map<EncodeHintType, Object> hintsMap;
+
+        private int onColor = BLACK;
+        private int offColor = WHITE;
+
+        //LOGO 配置
+        private Border logoBorder;
+        private InputStream logoInput;
+
+        //输出配置
+        private boolean outType = true; //true用流
+        private OutputStream outStream;
+        private String filePath;
+
+        private QrCodeBuilder(String content) {
+            this.hintsMap = Encode.getDefHints();
+            this.content = content;
+        }
+
+        public static QrCodeBuilder genBuilder(String content){
+            return new QrCodeBuilder(content);
+        }
+
+        public QrCodeBuilder setImageType(ImageType imageType) {
+            this.imageType = imageType;
+            return this;
+        }
+
+        public QrCodeBuilder setWidthAndHeight(int widthAndHeight) {
+            this.widthAndHeight = widthAndHeight;
+            return this;
+        }
+
+        public QrCodeBuilder clearHints(){
+            this.hintsMap = new HashMap<>();
+            return this;
+        }
+
+        public QrCodeBuilder setChartset(String chartset) {
+            this.hintsMap.put(EncodeHintType.CHARACTER_SET, chartset);
+            return this;
+        }
+
+        public QrCodeBuilder setErrCorrection(ErrorCorrectionLevel level) {
+            this.hintsMap.put(EncodeHintType.ERROR_CORRECTION, level);
+            return this;
+        }
+
+        public QrCodeBuilder setMargin(int margin) {
+            this.hintsMap.put(EncodeHintType.MARGIN, margin);
+            return this;
+        }
+
+        public QrCodeBuilder setOutput(OutputStream out) {
+            this.outType = true;
+            this.outStream = out;
+            return this;
+        }
+
+        public QrCodeBuilder setOutput(String filePath) {
+            this.outType = false;
+            this.filePath = filePath;
+            return this;
+        }
+
+        public QrCodeBuilder setLogoBorder(Border logoBorder) {
+            this.logoBorder = logoBorder;
+            return this;
+        }
+
+        public QrCodeBuilder setLogoInput(InputStream logoInput) {
+            this.logoInput = logoInput;
+            return this;
+        }
+
+        public void gen() throws WriterException, IOException{
+            try {
+                BitMatrix bitMatrix = new MultiFormatWriter().encode(this.content
+                        , BarcodeFormat.QR_CODE
+                        , this.widthAndHeight, this.widthAndHeight
+                        , this.hintsMap);
+                BufferedImage qrImage = toBufferedImage(bitMatrix);
+
+                //合并logo
+                if (this.logoInput != null){
+                    qrImage = setMatrixLogo(qrImage, this.logoInput);
+                }
+
+
+                if (this.outType){
+                    if (!ImageIO.write(qrImage, this.imageType.getValue(), this.outStream)) {
+                        throw new IOException("Could not write an image of format " + this.imageType.getValue());
+                    }
+                } else {
+                    Path path = FileSystems.getDefault().getPath(filePath);
+                    if (!ImageIO.write(qrImage, this.imageType.getValue(), path.toFile())) {
+                        throw new IOException("Could not write an image of format " + this.imageType.getValue());
+                    }
+                }
+            }finally {
+                IOUtils.closeQuietly(this.logoInput);
+                IOUtils.closeQuietly(this.outStream);
+            }
+        }
+
+        /**
+         * 合并logo
+         *
+         * @param matrixImage 生成的二维码
+         * @param logoInput   logo地址
+         * @return 带有logo的二维码
+         */
+        private BufferedImage setMatrixLogo(BufferedImage matrixImage, InputStream logoInput) throws IOException {
+            // 1、读取二维码图片，并构建绘图对象
+            Graphics2D graph = matrixImage.createGraphics();
+
+            // 2、读取logo图片
+            BufferedImage logo = ImageIO.read(logoInput);
+
+            int widthLogo = matrixImage.getWidth() / 3;
+            int heightLogo = matrixImage.getHeight() / 3;
+
+            // 3、计算图片放置的位置
+            int x = (matrixImage.getWidth() - widthLogo) / 2;
+            int y = (matrixImage.getHeight() - heightLogo) / 2;
+
+            // 4、绘制图片
+            graph.drawImage(logo, x, y, widthLogo, heightLogo, null);
+            graph.drawRoundRect(x, y, widthLogo, heightLogo, 10, 10);
+
+            if (this.logoBorder != null){
+                graph.setStroke(new BasicStroke(this.logoBorder.width));
+                graph.setColor(this.logoBorder.color);
+            }
+            graph.drawRect(x, y, widthLogo, heightLogo);
+            graph.dispose();
+            return matrixImage;
+        }
+
+        /**
+         * 将二维码转成Image，不调用ZXing的，是因为ImageType 需要使用TYPE_INT_RGB才能是彩色的
+         * @param matrix 二维码图片
+         * @return 二维码图片对象
+         */
+        private BufferedImage toBufferedImage(BitMatrix matrix) {
+            int width = matrix.getWidth();
+            int height = matrix.getHeight();
+            BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            int[] rowPixels = new int[width];
+            BitArray row = new BitArray(width);
+            for (int y = 0; y < height; y++) {
+                row = matrix.getRow(y, row);
+                for (int x = 0; x < width; x++) {
+                    rowPixels[x] = row.get(x) ? this.onColor : this.offColor;
+                }
+                image.setRGB(0, y, width, 1, rowPixels, 0, width);
+            }
+            return image;
+        }
+
+        public static class Border {
+            public float width;
+            public Color color;
+
+            public Border() {
+                this.width = 1;
+                this.color = new Color(128, 128, 128);
+            }
+
+            public Border(float width, Color color) {
+                this.width = width;
+                this.color = color;
+            }
+        }
+
     }
 
 

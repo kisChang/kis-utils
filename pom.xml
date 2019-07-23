@@ -6,7 +6,7 @@
 
     <groupId>com.kischang</groupId>
     <artifactId>kis-utils</artifactId>
-    <version>0.3.11-SNAPSHOT</version>
+    <version>0.3.12-SNAPSHOT</version>
 
     <description>
         常用工具类整理
@@ -15,7 +15,7 @@
     <properties>
         <jackson.version>1.9.13</jackson.version>
         <spring.version>4.0.6.RELEASE</spring.version>
-        <zxing.version>3.2.1</zxing.version>
+        <zxing.version>3.4.0</zxing.version>
         <scala.version>2.11.8</scala.version>
 
         <file-charset>UTF-8</file-charset>
@@ -153,12 +153,10 @@
     <distributionManagement>
         <repository>
             <id>rdc-releases</id>
-            <name>nexus-releases</name>
             <url>https://repo.rdc.aliyun.com/repository/52028-release-3c4LB0/</url>
         </repository>
         <snapshotRepository>
             <id>rdc-snapshots</id>
-            <name>rdc-snapshots</name>
             <url>https://repo.rdc.aliyun.com/repository/52028-snapshot-HkSppH/</url>
         </snapshotRepository>
     </distributionManagement>
