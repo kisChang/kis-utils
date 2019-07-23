@@ -129,6 +129,11 @@ public class ZXingUtils {
             return this;
         }
 
+        public QrCodeBuilder setContent(String content) {
+            this.content = content;
+            return this;
+        }
+
         public QrCodeBuilder setWidthAndHeight(int widthAndHeight) {
             this.widthAndHeight = widthAndHeight;
             return this;
@@ -144,6 +149,15 @@ public class ZXingUtils {
             return this;
         }
 
+        public QrCodeBuilder setErrCorrection(int level) {
+            ErrorCorrectionLevel tmp = ErrorCorrectionLevel.M;
+            for (ErrorCorrectionLevel once : ErrorCorrectionLevel.values()){
+                if (once.getBits() == level){
+                    tmp = once;
+                }
+            }
+            return setErrCorrection(tmp);
+        }
         public QrCodeBuilder setErrCorrection(ErrorCorrectionLevel level) {
             this.hintsMap.put(EncodeHintType.ERROR_CORRECTION, level);
             return this;
