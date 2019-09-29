@@ -10,6 +10,7 @@
 
     <description>
         常用工具类整理
+        发布命令：mvn clean deploy
     </description>
 
     <properties>

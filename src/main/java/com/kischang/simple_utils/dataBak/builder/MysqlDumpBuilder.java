@@ -2,6 +2,7 @@ package com.kischang.simple_utils.dataBak.builder;
 
 
 import com.kischang.simple_utils.dataBak.DumpType;
+import com.kischang.simple_utils.utils.OS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,11 @@ public class MysqlDumpBuilder {
         System.out.println(builder.build());
     }
 
-    private boolean commandType = true;  //true mysqldump Linux   ||| false mysqldump.exe Windows
+    private boolean commandType;        //true mysqldump Linux   ||| false mysqldump.exe Windows
     private String command = null;      //如果不为null， 则忽略commandType
     private String username;
     private String password;
+    private String otherArgs = null;    //直接追加在命令尾部
 
     private String host = "localhost";
     private int port = 3306;
@@ -47,6 +49,10 @@ public class MysqlDumpBuilder {
 
     //--opt 相当于 --add-drop-table --add-locks --create-options --disable-keys --extended-insert --lock-tables --quick --set-charset
     private boolean opt = false;
+
+    public MysqlDumpBuilder() {
+        this.commandType = OS.isFamilyUnix();
+    }
 
     public String build(){
         if(checkErr()){
@@ -87,6 +93,9 @@ public class MysqlDumpBuilder {
         }
         if (opt){
             sb.append(" --opt ");
+        }
+        if (otherArgs != null){
+            sb.append(" ").append(otherArgs).append(" ");
         }
 
         if (!isNullArr(databases)){
