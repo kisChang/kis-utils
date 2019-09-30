@@ -1,5 +1,7 @@
 package com.kischang.simple_utils.dataBak.builder;
 
+import com.kischang.simple_utils.utils.OS;
+
 /**
  * 数据恢复命令创建工具
  *
@@ -30,6 +32,15 @@ public class MysqlRecoveryBuilder {
 
     private String database;    //目标数据库
 
+    private boolean inType = true;//true使用data  false使用file
+    private String data;
+    private String file;
+
+
+    public MysqlRecoveryBuilder() {
+        this.commandType = OS.isFamilyUnix();
+    }
+
     public String build() {
         if (checkErr()) {
             return null;
@@ -50,6 +61,11 @@ public class MysqlRecoveryBuilder {
         // （原因：因为调用过程中有错误输出而导致输入流异常）
         sb.append(" --force ");
 
+        if (this.inType){
+            //使用data，没参数了
+        }else {
+            sb.append(" < ").append(this.file);
+        }
         return sb.toString();
     }
 
@@ -112,5 +128,40 @@ public class MysqlRecoveryBuilder {
     public MysqlRecoveryBuilder setDatabase(String database) {
         this.database = database;
         return this;
+    }
+    public MysqlRecoveryBuilder setUseData(String data) {
+        this.data = data;
+        this.inType = true;
+        return this;
+    }
+
+    public MysqlRecoveryBuilder setUseFile(String file) {
+        this.file = file;
+        this.inType = false;
+        return this;
+    }
+
+    public boolean isInType() {
+        return inType;
+    }
+
+    public void setInType(boolean inType) {
+        this.inType = inType;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 }

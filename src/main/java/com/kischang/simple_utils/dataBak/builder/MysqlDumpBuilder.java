@@ -4,7 +4,7 @@ package com.kischang.simple_utils.dataBak.builder;
 import com.kischang.simple_utils.dataBak.DumpType;
 import com.kischang.simple_utils.utils.OS;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -36,19 +36,23 @@ public class MysqlDumpBuilder {
     private String host = "localhost";
     private int port = 3306;
 
-    private List<String> databases; //备份的数据库       （--databases）
-    private List<String> tables;    //备份的数据库中指定表 （--tables）
+    private List<String> databases;         //备份的数据库       （--databases）
+    private List<String> tables;            //备份的数据库中指定表 （--tables）
+    private List<String> ignoreTables;      //跳过的数据表 （--ignore-table）
 
     private boolean hasCreateDB = true;    //是否添加CREATE DATABASE 语句 （false则增加--no-create-db）
     private DumpType bakType = DumpType.DataAndDesc;
 
 
 
-    private boolean addDropTable = false;   //默认 false  --skip-add-drop-table  (取消drop语句)
-    private boolean compact = true;         //默认 (--compact)输出更少的信息
+    private boolean addDropTable = true;   //默认 false  --skip-add-drop-table  (取消drop语句)
+    private boolean compact = false;         //默认 (--compact)输出更少的信息
 
     //--opt 相当于 --add-drop-table --add-locks --create-options --disable-keys --extended-insert --lock-tables --quick --set-charset
     private boolean opt = false;
+
+    private boolean outType = true; //true流输出   false到文件
+    private String outFile;
 
     public MysqlDumpBuilder() {
         this.commandType = OS.isFamilyUnix();
@@ -110,6 +114,19 @@ public class MysqlDumpBuilder {
                 sb.append(" ").append(str);
             }
         }
+        if (!isNullArr(ignoreTables)){
+            sb.append(" --ignore-table");
+            for (String str : ignoreTables){
+                sb.append(" ").append(str);
+            }
+        }
+
+        if (this.outType){
+            //true流输出
+        }else {
+            //false到文件，可以忽略一些错误或警告输出，建议采用
+            sb.append(" --result-file=").append(this.outFile);
+        }
         return sb.toString();
     }
 
@@ -143,7 +160,7 @@ public class MysqlDumpBuilder {
 
     public MysqlDumpBuilder addDatabase(String db){
         if (databases == null){
-            databases = new ArrayList<>();
+            databases = new LinkedList<>();
         }
         databases.add(db);
         return this;
@@ -151,9 +168,17 @@ public class MysqlDumpBuilder {
 
     public MysqlDumpBuilder addTable(String table){
         if (tables == null){
-            tables = new ArrayList<>();
+            tables = new LinkedList<>();
         }
         tables.add(table);
+        return this;
+    }
+
+    public MysqlDumpBuilder addIgnoreTable(String table){
+        if (ignoreTables == null){
+            ignoreTables = new LinkedList<>();
+        }
+        ignoreTables.add(table);
         return this;
     }
 
@@ -169,6 +194,11 @@ public class MysqlDumpBuilder {
 
     public MysqlDumpBuilder setHost(String host) {
         this.host = host;
+        return this;
+    }
+
+    public MysqlDumpBuilder setOtherArgs(String otherArgs) {
+        this.otherArgs = otherArgs;
         return this;
     }
 
@@ -199,6 +229,15 @@ public class MysqlDumpBuilder {
 
     public MysqlDumpBuilder setOpt(boolean opt) {
         this.opt = opt;
+        return this;
+    }
+    public MysqlDumpBuilder setOutToFile(String file) {
+        this.outType = false;
+        this.outFile = file;
+        return this;
+    }
+    public MysqlDumpBuilder setOutToCmd() {
+        this.outType = true;
         return this;
     }
 }

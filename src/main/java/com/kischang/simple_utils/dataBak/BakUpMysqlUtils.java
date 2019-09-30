@@ -3,20 +3,17 @@ package com.kischang.simple_utils.dataBak;
 
 import com.kischang.simple_utils.dataBak.builder.MysqlDumpBuilder;
 import com.kischang.simple_utils.dataBak.builder.MysqlRecoveryBuilder;
-import com.kischang.simple_utils.execute.ExecResult;
-import com.kischang.simple_utils.execute.ExecuteInputStreamHandler;
-import com.kischang.simple_utils.utils.OS;
 import com.kischang.simple_utils.execute.CommandUtils;
+import com.kischang.simple_utils.execute.ExecResult;
+import com.kischang.simple_utils.utils.OS;
 import org.apache.commons.io.IOUtils;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.regex.Pattern;
 
 /**
- * Created by KisChang on 2015-05-15.
+ * Created by KisChang
+ *
  * 备份恢复mysql工具类
- * Windows未测试
  */
 public class BakUpMysqlUtils {
 
@@ -52,16 +49,18 @@ public class BakUpMysqlUtils {
      * 检测系统版本并进行对应的恢复操作
      * @return -1运行异常  0 正常  1执行参数问题（账号密码不对或数据库不存在） other执行过程问题（备份文件问题）
      */
-    public static int mysqlRecovery(final MysqlRecoveryBuilder builder, final String data){
-        ExecResult result = CommandUtils.exec(builder.build(), new ExecuteInputStreamHandler() {
-            @Override
-            public void handlerProcessInputStream(OutputStream os) throws IOException {
-                IOUtils.write(data, os, builder.getCharset());
+    public static int mysqlRecovery(final MysqlRecoveryBuilder builder){
+        ExecResult result = null;
+        if (builder.isInType()){
+            result = CommandUtils.exec(builder.build(), os -> {
+                IOUtils.write(builder.getData(), os, builder.getCharset());
                 os.flush();
                 os.close();
-            }
-        });
-        return result.getExitCode();
+            });
+        }else {
+            result = CommandUtils.exec(builder.build());
+        }
+        return result != null ? result.getExitCode() : -1;
     }
 
     public static int mysqlRecovery(String data, String databaseName, String username, String password) {
@@ -70,8 +69,9 @@ public class BakUpMysqlUtils {
                 .setUsername(username)
                 .setPassword(password)
                 .setDatabase(databaseName)
+                .setUseData(data)
         ;
-        return mysqlRecovery(builder, data);
+        return mysqlRecovery(builder);
     }
 
 }
