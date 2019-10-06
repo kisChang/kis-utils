@@ -4,6 +4,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 
@@ -11,7 +12,20 @@ import java.io.*;
  * 压缩工具类
  */
 public class CompressUtils {
-    private static final int BUFFER = 1024;
+
+    public static void main(String[] args) throws Exception {
+        CompressUtils cu = new CompressUtils(CompressType.GZIP);
+
+        InputStream in = new FileInputStream("D:\\MyProgram\\apache-tomcat-8.5.33\\temp\\tmp_cl_bak_1570357562342.db.sql");
+        OutputStream out = new FileOutputStream("D:\\MyProgram\\apache-tomcat-8.5.33\\temp\\tmp.gz");
+        cu.compress(in, out);
+        IOUtils.closeQuietly(in);
+        IOUtils.closeQuietly(out);
+
+        InputStream in2 = new FileInputStream("D:\\MyProgram\\apache-tomcat-8.5.33\\temp\\tmp.gz");
+        OutputStream out2 = new FileOutputStream("D:\\MyProgram\\apache-tomcat-8.5.33\\temp\\tmp.sql");
+        cu.decompress(in2, out2);
+    }
 
     private CompressType compressType = CompressType.GZIP;
 
@@ -37,33 +51,21 @@ public class CompressUtils {
      * 压缩
      */
     public byte[] compression(byte[] message) {
-        ByteArrayInputStream bais =null;
+        ByteArrayInputStream bais = null;
         ByteArrayOutputStream baos = null;
         byte[] output = null;
         try {
             bais = new ByteArrayInputStream(message);
             baos = new ByteArrayOutputStream();
             compress(bais, baos);
-            output  = baos.toByteArray();
+            output = baos.toByteArray();
             baos.flush();
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e);
         } finally {
-            if(baos != null){
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(bais != null){
-                try {
-                    bais.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            IOUtils.closeQuietly(baos);
+            IOUtils.closeQuietly(bais);
         }
         return output;
     }
@@ -75,30 +77,17 @@ public class CompressUtils {
         ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] data = null;
-        try{
+        try {
             bais = new ByteArrayInputStream(bytes);
             baos = new ByteArrayOutputStream();
             decompress(bais, baos);
             data = baos.toByteArray();
             baos.flush();
-        }catch (Exception e){
-            e.printStackTrace();
+        } catch (Exception e) {
             throw new RuntimeException(e);
-        }finally {
-            if(baos != null){
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(bais != null){
-                try {
-                    bais.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        } finally {
+            IOUtils.closeQuietly(baos);
+            IOUtils.closeQuietly(bais);
         }
         return data;
     }
@@ -108,23 +97,12 @@ public class CompressUtils {
      * 数据流压缩
      */
     public void compress(InputStream is, OutputStream os) throws Exception {
-        CompressorOutputStream gos = null;
-        try{
-            gos = new CompressorStreamFactory()
-                    .createCompressorOutputStream(compressType.getValue(), os);
-            int count;
-            byte data[] = new byte[BUFFER];
-            while ((count = is.read(data, 0, BUFFER)) != -1) {
-                gos.write(data, 0, count);
-            }
-            gos.flush();
-        }catch (Exception e){
-            throw e;
-        }finally {
-            if(gos != null)
-                gos.close();
+        try (CompressorOutputStream gos = new CompressorStreamFactory()
+                .createCompressorOutputStream(compressType.getValue(), os)) {
+            IOUtils.copy(is, gos);
         }
     }
+
     /**
      * 获取压缩数据流
      */
@@ -137,20 +115,9 @@ public class CompressUtils {
      */
     public void decompress(InputStream is, OutputStream os)
             throws Exception {
-        CompressorInputStream gis = null;
-        try{
-            gis = new CompressorStreamFactory()
-                    .createCompressorInputStream(compressType.getValue(),is);
-            int count;
-            byte data[] = new byte[BUFFER];
-            while ((count = gis.read(data, 0, BUFFER)) != -1) {
-                os.write(data, 0, count);
-            }
-        }catch (Exception e){
-            throw e;
-        }finally {
-            if(gis != null)
-                gis.close();
+        try (CompressorInputStream gis = new CompressorStreamFactory()
+                .createCompressorInputStream(compressType.getValue(), is)) {
+            IOUtils.copy(gis, os);
         }
     }
 
@@ -158,7 +125,7 @@ public class CompressUtils {
     /**
      * 数据流解压缩
      */
-    public InputStream decompress( InputStream in) throws CompressorException {
+    public InputStream decompress(InputStream in) throws CompressorException {
         return new CompressorStreamFactory().createCompressorInputStream(compressType.getValue(), in);
     }
 }

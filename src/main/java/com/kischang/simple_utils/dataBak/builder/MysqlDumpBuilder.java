@@ -2,6 +2,8 @@ package com.kischang.simple_utils.dataBak.builder;
 
 
 import com.kischang.simple_utils.dataBak.DumpType;
+import com.kischang.simple_utils.execute.CommandUtils;
+import com.kischang.simple_utils.execute.ExecResult;
 import com.kischang.simple_utils.utils.OS;
 
 import java.util.LinkedList;
@@ -17,14 +19,24 @@ public class MysqlDumpBuilder {
 
     public static void main(String[] args) {
         MysqlDumpBuilder builder = new MysqlDumpBuilder();
-        builder.setCommandType(true)
-            .setUsername("root")
-            .setPassword("root")
+        builder
+            .setCommand("C:\\Users\\KisChang\\Desktop\\mysqlutils\\mysqldump.exe")
+            .setUsername("careerlab")
+            .setPassword("tbceo")
+            .addDatabase("careerlab")
+            /*MySQL8 新增的选项，加上可以不报错*/
+            .setOtherArgs("--column-statistics=0 --force --hex-blob ")
+            /*配置参数*/
+            .setAddDropTable(true)
+            .setCompact(false)
             .setBakType(DumpType.DataAndDesc)
-            .addDatabase("CareerAssess")
-            .addTable("sys_role")
-            .setOpt(true);
+            .setOutToFile("C:\\Users\\KisChang\\Desktop\\tmp.sql")
+            .setDefChartset("utf8mb4")
+        ;
         System.out.println(builder.build());
+        ExecResult result = CommandUtils.exec(builder.build());
+        String str = result.getOutData();
+        System.out.println(str);
     }
 
     private boolean commandType;        //true mysqldump Linux   ||| false mysqldump.exe Windows
@@ -32,6 +44,7 @@ public class MysqlDumpBuilder {
     private String username;
     private String password;
     private String otherArgs = null;    //直接追加在命令尾部
+    private String defaultChartset = null;    //直接追加在命令尾部
 
     private String host = "localhost";
     private int port = 3306;
@@ -67,6 +80,10 @@ public class MysqlDumpBuilder {
                 : command;
 
         StringBuilder sb = new StringBuilder(tmp);
+        if (defaultChartset != null){
+            sb.append(" --default-character-set=").append(defaultChartset);
+        }
+
         sb.append(" --user=").append(username);
         sb.append(" --password=").append(password);
         sb.append(" --host=").append(host);
@@ -98,10 +115,10 @@ public class MysqlDumpBuilder {
         if (opt){
             sb.append(" --opt ");
         }
+
         if (otherArgs != null){
             sb.append(" ").append(otherArgs).append(" ");
         }
-
         if (!isNullArr(databases)){
             sb.append(" --databases");
             for (String str : databases){
@@ -194,6 +211,11 @@ public class MysqlDumpBuilder {
 
     public MysqlDumpBuilder setHost(String host) {
         this.host = host;
+        return this;
+    }
+
+    public MysqlDumpBuilder setDefChartset(String chartset) {
+        this.defaultChartset = chartset;
         return this;
     }
 
