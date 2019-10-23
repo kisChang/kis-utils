@@ -24,4 +24,9 @@ public @interface ReqPageInfo {
      */
     String pageNowParam() default "pageNow";
 
+    /**
+     * 单页条数参数
+     */
+    String pageSizeParam() default "pageSize";
+
 }

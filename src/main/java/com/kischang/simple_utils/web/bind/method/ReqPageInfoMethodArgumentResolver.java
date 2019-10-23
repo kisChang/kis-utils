@@ -39,7 +39,8 @@ public class ReqPageInfoMethodArgumentResolver implements HandlerMethodArgumentR
             String queryString = request.getQueryString();
             if(queryString != null){
                 queryString = queryString.replaceAll(reqPageInfoAnnotation.pageNowParam() + "=[0-9]+[&]?","");
-                if(queryString != null && !"".equals(queryString) && !"null".equalsIgnoreCase(queryString)){
+                queryString = queryString.replaceAll(reqPageInfoAnnotation.pageSizeParam() + "=[0-9]+[&]?","");
+                if(!"".equals(queryString) && !"null".equalsIgnoreCase(queryString)){
                     url = request.getServletPath() + "?" + queryString;
                 }
             }
@@ -49,10 +50,17 @@ public class ReqPageInfoMethodArgumentResolver implements HandlerMethodArgumentR
             pageInfo.setUrl(reqPageInfoAnnotation.url());
         }
 
-        //pageSize And PageNow
+        //update pageSize
         pageInfo.setPageSize(reqPageInfoAnnotation.pageSize());
-        pageInfo.setPageNow(1);
+        try {
+            String pageSize = webRequest.getParameter(reqPageInfoAnnotation.pageSizeParam());
+            if (pageSize != null){
+                pageInfo.setPageSize(Integer.parseInt(pageSize));
+            }
+        }catch (Exception ignored){
+        }
 
+        pageInfo.setPageNow(1);
         //update PageNow
         String pageNow = webRequest.getParameter(reqPageInfoAnnotation.pageNowParam());
         try{
