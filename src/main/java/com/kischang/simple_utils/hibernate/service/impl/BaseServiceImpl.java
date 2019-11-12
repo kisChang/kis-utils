@@ -38,6 +38,7 @@ public class BaseServiceImpl implements BaseService {
     }
 
     @Override
+    @TxExceptionRoll
     public Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
