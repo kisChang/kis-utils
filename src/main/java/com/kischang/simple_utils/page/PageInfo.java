@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.ui.Model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * 分页对象
@@ -50,15 +51,19 @@ public class PageInfo implements Serializable {
     }
 
     public int getPageSize() {
-        return pageSize;
+        if (pageSize > 0){
+            return this.pageSize;
+        }else{
+            return  1;
+        }
+    }
+
+    public int getPageSizeReal() {
+        return this.pageSize;
     }
 
     public void setPageSize(int pageSize) {
-        if (pageSize > 0){
-            this.pageSize = pageSize;
-        }else{
-            this.pageSize = 1;
-        }
+        this.pageSize = pageSize;
     }
 
     public int getPageNow() {
@@ -88,10 +93,10 @@ public class PageInfo implements Serializable {
             value = totalCount.intValue();
         }
         this.totalNum = value;
-        if (value % pageSize == 0) {
-            this.totalPage = value / pageSize;
+        if (value % getPageSize() == 0) {
+            this.totalPage = value / getPageSize();
         } else {
-            this.totalPage = value / pageSize + 1;
+            this.totalPage = value / getPageSize() + 1;
         }
         if (getPageNow() > this.totalPage){
             setPageNow(this.totalPage);
@@ -109,6 +114,34 @@ public class PageInfo implements Serializable {
 
     @JsonIgnore
     public int getLimitStart() {
-        return (pageNow - 1) * pageSize;
+        return (pageNow - 1) * getPageSize();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PageInfo pageInfo = (PageInfo) o;
+        return pageNow == pageInfo.pageNow &&
+                pageSize == pageInfo.pageSize &&
+                totalPage == pageInfo.totalPage &&
+                totalNum == pageInfo.totalNum &&
+                Objects.equals(url, pageInfo.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pageNow, pageSize, totalPage, totalNum, url);
+    }
+
+    @Override
+    public String toString() {
+        return "PageInfo{" +
+                "pageNow=" + pageNow +
+                ", pageSize=" + pageSize +
+                ", totalPage=" + totalPage +
+                ", totalNum=" + totalNum +
+                ", url='" + url + '\'' +
+                '}';
     }
 }
