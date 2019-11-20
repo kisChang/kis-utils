@@ -43,6 +43,9 @@ public class FunctionUtils {
      * @return 隐藏后的字符串
      */
     public static String hidePartStrOnChar(String str, int start, char ch, String replace){
+        if (str == null){
+            return "";
+        }
         if (str.length() < start){
             return str;
         }
@@ -67,6 +70,9 @@ public class FunctionUtils {
      * @return 隐藏后的字符串
      */
     public static String hidePartStrOnNum(String str, int start, int hideNum, String replace){
+        if (str == null){
+            return "";
+        }
         if (str.length() < start){
             return str;
         }
