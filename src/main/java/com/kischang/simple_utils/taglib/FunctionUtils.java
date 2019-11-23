@@ -50,15 +50,20 @@ public class FunctionUtils {
             return str;
         }
         String tmp = str.substring(0, start);
+        String last = str.substring(start);
+
+        //被截取的范围，存在ch
         if (tmp.contains(String.valueOf(ch))){
-            return str;
-        }else {
-            StringBuilder sb = new StringBuilder();
-            sb.append(tmp);
-            sb.append(replace);
-            sb.append(str, str.indexOf(ch), str.length());
-            return sb.toString();
+            //且后面也没有了
+            if (!last.contains(String.valueOf(ch))){
+                return str;
+            }
         }
+        StringBuilder sb = new StringBuilder();
+        sb.append(tmp);
+        sb.append(replace);
+        sb.append(last, last.indexOf(ch), last.length());
+        return sb.toString();
     }
 
     /**
