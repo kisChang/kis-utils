@@ -6,7 +6,8 @@
 
     <groupId>com.kischang</groupId>
     <artifactId>kis-utils</artifactId>
-    <version>0.3.14-SNAPSHOT</version>
+<!--    <version>0.3.16-SNAPSHOT</version>-->
+    <version>0.3.15</version>
 
     <description>
         常用工具类整理
@@ -14,7 +15,6 @@
     </description>
 
     <properties>
-        <jackson.version>1.9.13</jackson.version>
         <spring.version>5.0.7.RELEASE</spring.version>
         <zxing.version>3.4.0</zxing.version>
         <scala.version>2.11.8</scala.version>
