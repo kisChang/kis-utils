@@ -14,7 +14,6 @@ import org.apache.commons.io.IOUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.FileSystems;
@@ -110,6 +109,13 @@ public class ZXingUtils {
         private Border logoBorder;
         private InputStream logoInput;
 
+        //外边框配置
+        private InputStream borderInput;
+        private int borderQrSize;       //二维码大小（正方形）
+        private int borderPosx;         //在边框图的什么位置开始绘制
+        private int borderPosy;         //x\y
+
+
         //输出配置
         private boolean outType = true; //true用流
         private OutputStream outStream;
@@ -190,20 +196,58 @@ public class ZXingUtils {
             return this;
         }
 
+        public QrCodeBuilder setBorderInput(InputStream borderInput) {
+            this.borderInput = borderInput;
+            return this;
+        }
+
+        public QrCodeBuilder setBorderQrSize(int borderQrSize) {
+            this.borderQrSize = borderQrSize;
+            return this;
+        }
+
+        public QrCodeBuilder setBorderPosx(int borderPosx) {
+            this.borderPosx = borderPosx;
+            return this;
+        }
+
+        public QrCodeBuilder setBorderPosy(int borderPosy) {
+            this.borderPosy = borderPosy;
+            return this;
+        }
+
+        public BufferedImage genBufferedImage() throws IOException, WriterException {
+            BitMatrix bitMatrix = new MultiFormatWriter().encode(this.content
+                    , BarcodeFormat.QR_CODE
+                    , this.widthAndHeight, this.widthAndHeight
+                    , this.hintsMap);
+            BufferedImage qrImage = toBufferedImage(bitMatrix);
+
+            //合并logo
+            if (this.logoInput != null){
+                qrImage = ImageUtils.setMatrixLogo(qrImage
+                        , ImageUtils.readImage(this.logoInput)
+                        , this.logoBorder
+                        , ImageUtils.GenPositionFunc.CENTER
+                );
+            }
+
+            //处理边框
+            if (this.borderInput != null){
+                qrImage = ImageUtils.setMatrixLogo(
+                        ImageUtils.readImage(this.borderInput)
+                        , qrImage
+                        , null
+                        , this.borderQrSize, this.borderQrSize
+                        , this.borderPosx, this.borderPosy
+                );
+            }
+            return qrImage;
+        }
+
         public void gen() throws WriterException, IOException{
             try {
-                BitMatrix bitMatrix = new MultiFormatWriter().encode(this.content
-                        , BarcodeFormat.QR_CODE
-                        , this.widthAndHeight, this.widthAndHeight
-                        , this.hintsMap);
-                BufferedImage qrImage = toBufferedImage(bitMatrix);
-
-                //合并logo
-                if (this.logoInput != null){
-                    qrImage = setMatrixLogo(qrImage, this.logoInput);
-                }
-
-
+                BufferedImage qrImage = genBufferedImage();
                 if (this.outType){
                     if (!ImageIO.write(qrImage, this.imageType.getValue(), this.outStream)) {
                         throw new IOException("Could not write an image of format " + this.imageType.getValue());
@@ -218,40 +262,6 @@ public class ZXingUtils {
                 IOUtils.closeQuietly(this.logoInput);
                 IOUtils.closeQuietly(this.outStream);
             }
-        }
-
-        /**
-         * 合并logo
-         *
-         * @param matrixImage 生成的二维码
-         * @param logoInput   logo地址
-         * @return 带有logo的二维码
-         */
-        private BufferedImage setMatrixLogo(BufferedImage matrixImage, InputStream logoInput) throws IOException {
-            // 1、读取二维码图片，并构建绘图对象
-            Graphics2D graph = matrixImage.createGraphics();
-
-            // 2、读取logo图片
-            BufferedImage logo = ImageIO.read(logoInput);
-
-            int widthLogo = matrixImage.getWidth() / 3;
-            int heightLogo = matrixImage.getHeight() / 3;
-
-            // 3、计算图片放置的位置
-            int x = (matrixImage.getWidth() - widthLogo) / 2;
-            int y = (matrixImage.getHeight() - heightLogo) / 2;
-
-            // 4、绘制图片
-            graph.drawImage(logo, x, y, widthLogo, heightLogo, null);
-            graph.drawRoundRect(x, y, widthLogo, heightLogo, 10, 10);
-
-            if (this.logoBorder != null){
-                graph.setStroke(new BasicStroke(this.logoBorder.width));
-                graph.setColor(this.logoBorder.color);
-            }
-            graph.drawRect(x, y, widthLogo, heightLogo);
-            graph.dispose();
-            return matrixImage;
         }
 
         /**
