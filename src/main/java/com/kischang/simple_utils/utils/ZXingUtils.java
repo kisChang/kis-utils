@@ -108,6 +108,7 @@ public class ZXingUtils {
         //LOGO 配置
         private Border logoBorder;
         private InputStream logoInput;
+        private ImageUtils.GenPositionFunc logoPosition = ImageUtils.GenPositionFunc.CENTER;
 
         //外边框配置
         private InputStream borderInput;
@@ -216,6 +217,11 @@ public class ZXingUtils {
             return this;
         }
 
+        public QrCodeBuilder setLogoPosition(ImageUtils.GenPositionFunc logoPosition) {
+            this.logoPosition = logoPosition;
+            return this;
+        }
+
         public BufferedImage genBufferedImage() throws IOException, WriterException {
             BitMatrix bitMatrix = new MultiFormatWriter().encode(this.content
                     , BarcodeFormat.QR_CODE
@@ -228,7 +234,7 @@ public class ZXingUtils {
                 qrImage = ImageUtils.setMatrixLogo(qrImage
                         , ImageUtils.readImage(this.logoInput)
                         , this.logoBorder
-                        , ImageUtils.GenPositionFunc.CENTER
+                        , logoPosition
                 );
             }
 

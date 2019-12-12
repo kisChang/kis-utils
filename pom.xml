@@ -6,8 +6,8 @@
 
     <groupId>com.kischang</groupId>
     <artifactId>kis-utils</artifactId>
-<!--    <version>0.3.19-SNAPSHOT</version>-->
-    <version>0.3.18</version>
+<!--    <version>0.3.20-SNAPSHOT</version>-->
+    <version>0.3.19</version>
 
     <description>
         常用工具类整理
