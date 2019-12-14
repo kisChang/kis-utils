@@ -28,14 +28,28 @@ public class POIExportExcel {
     private int rowIndex = 0;// 行索引
 
     public POIExportExcel() {
-        this.wb = new XSSFWorkbook();
-        this.is2007Xlsx = true;
+        this(true);
+    }
+    public POIExportExcel(boolean is2007Xlsx) {
+        if (is2007Xlsx){
+            this.wb = new XSSFWorkbook();
+        }else {
+            this.wb = new HSSFWorkbook();
+        }
+        this.is2007Xlsx = is2007Xlsx;
         this.initSheet(wb.getSheetName(0));
     }
 
     public POIExportExcel(String sheetName) {
-        this.wb = new XSSFWorkbook();
-        this.is2007Xlsx = true;
+        this(true, sheetName);
+    }
+    public POIExportExcel(boolean is2007Xlsx, String sheetName) {
+        if (is2007Xlsx){
+            this.wb = new XSSFWorkbook();
+        }else {
+            this.wb = new HSSFWorkbook();
+        }
+        this.is2007Xlsx = is2007Xlsx;
         this.initSheet(sheetName);
     }
 
