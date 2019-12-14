@@ -16,7 +16,7 @@ import java.util.Collection;
  * @author KisChang
  * @version 1.0
  */
-public class POIExportExcel {
+public class POIExportExcel implements Closeable {
 
     private String defaultFontFamily = "宋体";
     private int defaultFontSize = 200;
@@ -500,4 +500,10 @@ public class POIExportExcel {
         return is2007Xlsx ? "xlsx" : "xls";
     }
 
+    @Override
+    public void close() throws IOException {
+        if (this.wb != null){
+            this.wb.close();
+        }
+    }
 }
