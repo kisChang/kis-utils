@@ -1,18 +1,17 @@
 package com.kischang.simple_utils.excel.jxl;
 
-import jxl.Cell;
-import jxl.Sheet;
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Excel 读取写入工具
@@ -21,73 +20,94 @@ import java.util.List;
  * @version 1.0
  */
 public class ExcelReadWriteUtils {
+    private static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     //支持的列表
-    public static final List<String> SUPPORTLIST = Collections.singletonList("xls");
+    public static final Map<String, Boolean> SUPPORTLIST = new HashMap<String, Boolean>() {{
+        put("xls", TYPE_XLS);
+        put("xlsx", TYPE_XLSX);
+    }};
 
-    public static boolean readExcel(File file, ReadLineValueInterface readlineHandler) {
-        return readExcel(file, readlineHandler, 0);
-    }
-    public static boolean readExcel(File file, ReadLineValueInterface readlineHandler, int rowStart) {
-        Workbook wb = null;
+    public static final boolean TYPE_XLS = false;
+    public static final boolean TYPE_XLSX = true;
+
+    //读取excel
+    public static org.apache.poi.ss.usermodel.Workbook toWb(InputStream is, boolean type){
         try {
-            // 构造Workbook（工作薄）对象
-            wb = Workbook.getWorkbook(file);
-        } catch (BiffException | IOException e) {
+            if(type == TYPE_XLSX){
+                /*2007  xlsx*/
+                return new XSSFWorkbook(is);
+            }else {
+                /*2001  xls*/
+                return new HSSFWorkbook(is);
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return !readExcel(wb, readlineHandler, rowStart);
+        return null;
     }
 
-    public static boolean readExcel(InputStream inputStream, ReadLineValueInterface readlineHandler) {
-        return readExcel(inputStream, readlineHandler, 0);
+    public static boolean readExcel(InputStream inputStream, boolean excelFileType, ReadLineValueInterface readline) {
+        return readExcel(inputStream, excelFileType, false, readline);
+    }
+    public static boolean readExcel(InputStream inputStream, boolean excelFileType, boolean dateTimeType, ReadLineValueInterface readline) {
+        return realReadExcel(toWb(inputStream, excelFileType), dateTimeType, readline);
     }
 
-    public static boolean readExcel(InputStream inputStream, ReadLineValueInterface readlineHandler, int rowStart) {
-        Workbook wb = null;
-        try {
-            // 构造Workbook（工作薄）对象
-            wb = Workbook.getWorkbook(inputStream);
-        } catch (BiffException | IOException e) {
-            e.printStackTrace();
-        }
-
-        return !readExcel(wb, readlineHandler, rowStart);
-    }
-
-    private static boolean readExcel(Workbook wb, ReadLineValueInterface readlineHandler, int rowStart) {
+    private static boolean realReadExcel(org.apache.poi.ss.usermodel.Workbook wb, boolean dateTimeType, ReadLineValueInterface readline) {
         if (wb == null)
             return true;
+        // 对每个工作表进行循环
+        for (int sheetIndex = 0; sheetIndex < wb.getNumberOfSheets(); sheetIndex++) {
+            Sheet sheet = wb.getSheetAt(sheetIndex);
 
-        // 获得了Workbook对象之后，就可以通过它得到Sheet（工作表）对象了
-        Sheet[] sheet = wb.getSheets();
-
-        if (sheet != null && sheet.length > 0) {
-            // 对每个工作表进行循环
-            for (int i = 0; i < sheet.length; i++) {
-                // 得到当前工作表的行数
-                int rowNum = sheet[i].getRows();
-                for (int j = rowStart; j < rowNum; j++) {
-                    // 得到当前行的所有单元格
-                    Cell[] cells = sheet[i].getRow(j);
-                    if (cells != null && cells.length > 0) {
-                        // 对每个单元格进行循环
-                        String[] str = new String[cells.length];
-                        for (int k = 0; k < cells.length; k++) {
-                            // 读取当前单元格的值
-                            str[k] = cells[k].getContents();
+            // 得到当前工作表的行数
+            int rowNum = sheet.getLastRowNum();
+            for (int rowIndex = 0; rowIndex <= rowNum; rowIndex++) {
+                // 得到当前行的所有单元格
+                Row cells = sheet.getRow(rowIndex);
+                // 对每个单元格进行循环
+                List<String> strList = new LinkedList<>();
+                for (int cellIndex = 0; cellIndex < cells.getLastCellNum(); cellIndex++) {
+                    // 读取当前单元格的值
+                    Cell cell = cells.getCell(cellIndex);
+                    String onceStr = null;
+                    if (cell.getCellTypeEnum() == CellType.NUMERIC){
+                        if (DateUtil.isCellDateFormatted(cell)){
+                            //时间类型
+                            double date = DateUtil.getExcelDate(cell.getDateCellValue());
+                            Date javaDate = DateUtil.getJavaDate(date);
+                            if (dateTimeType){
+                                onceStr = datetimeFormat.format(javaDate);
+                            }else {
+                                onceStr = dateFormat.format(javaDate);
+                            }
+                        }else {
+                            //同样转换成字符串类型读取
+                            cell.setCellType(CellType.STRING);
+                            onceStr = cell.toString();
                         }
-                        // 调用接口处理
-                        if (!readlineHandler.readLineValue(str,j,sheet[i].getName())){
-                            break;
+                    }else {
+                        cell.setCellType(CellType.STRING);
+                        onceStr = cell.toString();
+                    }
+                    if (onceStr != null){
+                        if ("".equals(onceStr)){
+                            if (!strList.isEmpty()){
+                                strList.add(onceStr);
+                            }
+                        }else {
+                            strList.add(onceStr);
                         }
                     }
                 }
+                // 调用接口处理
+                if (!readline.readLineValue(strList.toArray(new String[]{}), rowIndex, sheet.getSheetName())) {
+                    break;
+                }
             }
         }
-        // 最后关闭资源，释放内存
-        wb.close();
         return false;
     }
 
