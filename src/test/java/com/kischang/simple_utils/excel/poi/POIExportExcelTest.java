@@ -14,7 +14,20 @@ import java.io.*;
 public class POIExportExcelTest {
 
     public static void main(String[] args) throws Exception {
-        testMain2();
+        //testMain2();
+        testMain3();
+    }
+
+    private static void testMain3() {
+        POIExportExcel exportExcel = new POIExportExcel(false);
+        exportExcel.toSheet("Grade");
+        exportExcel.newRow().createCell(0, "1");
+        exportExcel.newRow().createCell(0, "2");
+        exportExcel.newRow().createCell(0, "3");
+        exportExcel.newRow().createCell(0, "4");
+        exportExcel.newRow().createCell(0, "5");
+        exportExcel.newRow().createCell(0, "6");
+
     }
 
     public static void testMain1() throws Exception {

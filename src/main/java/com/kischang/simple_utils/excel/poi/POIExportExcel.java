@@ -37,7 +37,7 @@ public class POIExportExcel implements Closeable {
             this.wb = new HSSFWorkbook();
         }
         this.is2007Xlsx = is2007Xlsx;
-        this.initSheet(wb.getSheetName(0));
+        this.initSheet("sheet1");
     }
 
     public POIExportExcel(String sheetName) {
@@ -65,12 +65,20 @@ public class POIExportExcel implements Closeable {
         }else {
             this.wb = new HSSFWorkbook(in);
         }
-        this.initSheet(wb.getSheetName(0));
+        if (this.wb.sheetIterator().hasNext()){
+            this.initSheet(wb.getSheetName(0));
+        }else {
+            this.initSheet("sheet1");
+        }
     }
 
     public POIExportExcel(Workbook wb) {
         this.wb = wb;
-        this.initSheet(wb.getSheetName(0));
+        if (this.wb.sheetIterator().hasNext()){
+            this.initSheet(this.wb.getSheetName(0));
+        }else {
+            this.initSheet("sheet1");
+        }
     }
 
     public POIExportExcel(Workbook wb, String sheetName) {
@@ -301,6 +309,9 @@ public class POIExportExcel implements Closeable {
      */
     public POIExportExcel toSheet(String sheetName) {
         this.sheet = this.wb.getSheet(sheetName);
+        if (this.sheet == null){
+            this.sheet = this.wb.createSheet(sheetName);
+        }
         this.rowIndex = 0;
         this.nowRow = this.sheet.getRow(this.rowIndex);
         return this;
