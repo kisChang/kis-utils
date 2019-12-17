@@ -509,20 +509,23 @@ public class POIExportExcel implements Closeable {
     }
 
     public CellStyle createCellStyle() {
-        return this.createCellStyle(false, false, null);
+        return this.createCellStyle(false, null, null);
     }
 
     public CellStyle createCellStyle(boolean center, boolean border, IndexedColors colors) {
+        return this.createCellStyle(center, BorderStyle.THIN, colors);
+    }
+    public CellStyle createCellStyle(boolean center, BorderStyle border, IndexedColors colors) {
         CellStyle cellStyle = this.wb.createCellStyle();
         if (center){
             cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
             cellStyle.setAlignment(HorizontalAlignment.CENTER);
         }
-        if (border){
-            cellStyle.setBorderBottom(BorderStyle.DOTTED);
-            cellStyle.setBorderLeft(BorderStyle.DOTTED);
-            cellStyle.setBorderRight(BorderStyle.THIN);
-            cellStyle.setBorderTop(BorderStyle.THIN);
+        if (border != null){
+            cellStyle.setBorderTop(border);
+            cellStyle.setBorderBottom(border);
+            cellStyle.setBorderLeft(border);
+            cellStyle.setBorderRight(border);
         }
         if (colors != null){
             cellStyle.setFillForegroundColor(colors.getIndex());
