@@ -504,8 +504,16 @@ public class POIExportExcel implements Closeable {
         return getNowRow().getRowNum();
     }
 
+    public Row getRow(int rowIndex){
+        return this.getSheet().getRow(rowIndex);
+    }
+
     public Cell getCell(int index) {
         return this.getNowRow().getCell(index, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
+    }
+
+    public Cell getCell(int rowIndex, int index) {
+        return this.getSheet().getRow(rowIndex).getCell(index, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK);
     }
 
     public CellStyle createCellStyle() {
