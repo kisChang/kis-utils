@@ -2,9 +2,11 @@ package com.kischang.simple_utils.excel.poi;
 
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
@@ -411,6 +413,17 @@ public class POIExportExcel implements Closeable {
         return this;
     }
 
+    /**自动列宽， 中文并不好用*/
+    public POIExportExcel autoSizeColumn(int columnIndex){
+        this.getSheet().autoSizeColumn(columnIndex);
+        return this;
+    }
+    /**设置列宽*/
+    public POIExportExcel setColumnWidth(int columnIndex, int width){
+        this.getSheet().setColumnWidth(columnIndex, width);
+        return this;
+    }
+
     /**
      * 输出EXCEL文件
      *
@@ -496,11 +509,51 @@ public class POIExportExcel implements Closeable {
     }
 
     public CellStyle createCellStyle() {
-        return this.wb.createCellStyle();
+        return this.createCellStyle(false, false, null);
+    }
+
+    public CellStyle createCellStyle(boolean center, boolean border, IndexedColors colors) {
+        CellStyle cellStyle = this.wb.createCellStyle();
+        if (center){
+            cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+            cellStyle.setAlignment(HorizontalAlignment.CENTER);
+        }
+        if (border){
+            cellStyle.setBorderBottom(BorderStyle.DOTTED);
+            cellStyle.setBorderLeft(BorderStyle.DOTTED);
+            cellStyle.setBorderRight(BorderStyle.THIN);
+            cellStyle.setBorderTop(BorderStyle.THIN);
+        }
+        if (colors != null){
+            cellStyle.setFillForegroundColor(colors.getIndex());
+            cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        }
+        return cellStyle;
     }
 
     public Font createFont() {
-        return this.wb.createFont();
+        return this.createFont(null, false, false, null);
+    }
+
+    public Font createFont(Color color, boolean bold, boolean italic, Byte underline) {
+        Font font = this.wb.createFont();
+        if (color != null){
+            if (color instanceof HSSFColor){
+                HSSFColor tmp = (HSSFColor) color;
+                font.setColor(tmp.getIndex());
+            }
+            if (color instanceof XSSFColor){
+                XSSFColor tmp = (XSSFColor) color;
+                font.setColor(tmp.getIndex());
+            }
+        }
+        font.setBold(bold);
+        font.setItalic(italic);
+        if (underline != null){
+            font.setUnderline(underline);
+        }
+
+        return font;
     }
 
     public boolean isIs2007Xlsx() {

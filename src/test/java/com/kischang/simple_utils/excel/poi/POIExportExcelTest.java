@@ -1,8 +1,13 @@
 package com.kischang.simple_utils.excel.poi;
 
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 
+import java.awt.*;
 import java.io.*;
 
 /**
@@ -14,11 +19,34 @@ import java.io.*;
 public class POIExportExcelTest {
 
     public static void main(String[] args) throws Exception {
+        //testMain1();
         //testMain2();
-        testMain3();
+        //testMain3();
+        testMain4();
     }
 
-    private static void testMain3() {
+    private static void testMain4() throws IOException {
+        POIExportExcel exportExcel = new POIExportExcel(true);
+        exportExcel.toSheet("sheet1");
+        CellStyle cellStyle = exportExcel.createCellStyle(true, true, IndexedColors.PALE_BLUE);
+//        Font font = exportExcel.createFont(HSSFColor.HSSFColorPredefined.WHITE.getColor()
+//                , true, false, null);
+//        cellStyle.setFont(font);
+
+        exportExcel.newRow().writeRow(cellStyle, 0, "1", "1", "1");
+        exportExcel.newRow().writeRow(cellStyle, 0, "2", "2", "2");
+        exportExcel.newRow().writeRow(cellStyle, 0, "3", "3", "3");
+        exportExcel.newRow().writeRow(cellStyle, 0, "4", "长中文，自动调整列宽，功能测试", "4");
+        exportExcel.newRow().writeRow(cellStyle, 0, "5", "5", "5");
+        exportExcel.newRow().writeRow(cellStyle, 0, "6", "6", "6");
+        exportExcel.autoSizeColumn(1);
+        exportExcel.autoSizeColumn(2);
+
+        exportExcel.outputExcel("C:\\Users\\KisChang\\Desktop\\test." + exportExcel.getXlsType());
+    }
+
+
+    private static void testMain3() throws IOException {
         POIExportExcel exportExcel = new POIExportExcel(false);
         exportExcel.toSheet("Grade");
         exportExcel.newRow().createCell(0, "1");
@@ -27,7 +55,7 @@ public class POIExportExcelTest {
         exportExcel.newRow().createCell(0, "4");
         exportExcel.newRow().createCell(0, "5");
         exportExcel.newRow().createCell(0, "6");
-
+        exportExcel.outputExcel("C:\\Users\\KisChang\\Desktop\\test." + exportExcel.getXlsType());
     }
 
     public static void testMain1() throws Exception {
