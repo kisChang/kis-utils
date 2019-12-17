@@ -536,9 +536,8 @@ public class POIExportExcel implements Closeable {
     }
 
     public Font createFont(String fontFamily, int fontSize, Color color, boolean bold, boolean italic, Byte underline) {
-        Font font = this.wb.createFont();
-        font.setFontName(fontFamily);
-        font.setFontHeight((short) fontSize);
+        Font font = POIStyleUtils.initCellFont(this.wb, fontFamily, fontSize, bold);
+        font.setItalic(italic);
         if (color != null){
             if (color instanceof HSSFColor){
                 HSSFColor tmp = (HSSFColor) color;
@@ -549,12 +548,9 @@ public class POIExportExcel implements Closeable {
                 font.setColor(tmp.getIndex());
             }
         }
-        font.setBold(bold);
-        font.setItalic(italic);
         if (underline != null){
             font.setUnderline(underline);
         }
-
         return font;
     }
 
