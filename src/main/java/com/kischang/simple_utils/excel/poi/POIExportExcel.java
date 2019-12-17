@@ -532,9 +532,14 @@ public class POIExportExcel implements Closeable {
     }
 
     public Font createFont() {
-        return this.createFont("宋体", 300, null, false, false, null);
+        return this.createFont( false, false, null);
     }
-
+    public Font createFont(boolean bold, boolean italic, Byte underline) {
+        return this.createFont(null, bold, italic, underline);
+    }
+    public Font createFont(Color color, boolean bold, boolean italic, Byte underline) {
+        return this.createFont("宋体", 200, color, bold, italic, underline);
+    }
     public Font createFont(String fontFamily, int fontSize, Color color, boolean bold, boolean italic, Byte underline) {
         Font font = POIStyleUtils.initCellFont(this.wb, fontFamily, fontSize, bold);
         font.setItalic(italic);

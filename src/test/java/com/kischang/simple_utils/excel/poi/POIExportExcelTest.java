@@ -29,9 +29,11 @@ public class POIExportExcelTest {
         POIExportExcel exportExcel = new POIExportExcel(true);
         exportExcel.toSheet("sheet1");
         CellStyle cellStyle = exportExcel.createCellStyle(true, true, IndexedColors.PALE_BLUE);
-//        Font font = exportExcel.createFont(HSSFColor.HSSFColorPredefined.WHITE.getColor()
-//                , true, false, null);
-//        cellStyle.setFont(font);
+        Font font = exportExcel.createFont(
+                "宋体", 200
+                , HSSFColor.HSSFColorPredefined.WHITE.getColor()
+                , true, false, null);
+        cellStyle.setFont(font);
 
         exportExcel.newRow().writeRow(cellStyle, 0, "1", "1", "1");
         exportExcel.newRow().writeRow(cellStyle, 0, "2", "2", "2");
