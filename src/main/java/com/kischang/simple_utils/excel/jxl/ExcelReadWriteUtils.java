@@ -4,6 +4,7 @@ import jxl.Workbook;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -48,11 +49,27 @@ public class ExcelReadWriteUtils {
         return null;
     }
 
-    public static boolean readExcel(InputStream inputStream, boolean excelFileType, ReadLineValueInterface readline) {
+    public static org.apache.poi.ss.usermodel.Workbook toWb(File is){
+        try {
+            return WorkbookFactory.create(is, null, true);
+        } catch (IOException | InvalidFormatException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static boolean readExcel(InputStream inputStream, boolean excelFileType, com.kischang.simple_utils.excel.jxl.ReadLineValueInterface readline) {
         return readExcel(inputStream, excelFileType, false, readline);
     }
-    public static boolean readExcel(InputStream inputStream, boolean excelFileType, boolean dateTimeType, ReadLineValueInterface readline) {
+    public static boolean readExcel(InputStream inputStream, boolean excelFileType, boolean dateTimeType, com.kischang.simple_utils.excel.jxl.ReadLineValueInterface readline) {
         return realReadExcel(toWb(inputStream, excelFileType), dateTimeType, readline);
+    }
+
+    public static boolean readExcel(File file, com.kischang.simple_utils.excel.jxl.ReadLineValueInterface readline) {
+        return readExcel(file, false, readline);
+    }
+    public static boolean readExcel(File file, boolean dateTimeType, com.kischang.simple_utils.excel.jxl.ReadLineValueInterface readline) {
+        return realReadExcel(toWb(file), dateTimeType, readline);
     }
 
     private static boolean realReadExcel(org.apache.poi.ss.usermodel.Workbook wb, boolean dateTimeType, ReadLineValueInterface readline) {
