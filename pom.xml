@@ -15,7 +15,7 @@
     </description>
 
     <properties>
-        <spring.version>5.0.7.RELEASE</spring.version>
+        <spring.version>5.2.5.RELEASE</spring.version>
         <zxing.version>3.4.0</zxing.version>
         <scala.version>2.11.8</scala.version>
         <poi.version>3.17</poi.version>
