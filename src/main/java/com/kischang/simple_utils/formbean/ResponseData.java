@@ -3,11 +3,10 @@ package com.kischang.simple_utils.formbean;
 import com.kischang.simple_utils.utils.JacksonUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
- * 返回Json
- *
- * Created by KisChang on 2015-05-05.
+ * Ajax 返回 Json
  */
 public class ResponseData<T> implements Serializable{
 
@@ -31,8 +30,9 @@ public class ResponseData<T> implements Serializable{
         this.errorCode = errorCode;
     }
 
-    private static final ResponseData OK_INS = new ResponseData(true,null,0);
-    public static ResponseData mkOK(){
+    private static final ResponseData<Object> OK_INS = new ResponseData<Object>(true, null, 0);
+
+    public static ResponseData<Object> mkOK() {
         return OK_INS;
     }
 
@@ -75,5 +75,21 @@ public class ResponseData<T> implements Serializable{
     @Override
     public String toString() {
         return JacksonUtils.obj2Json(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ResponseData<?> that = (ResponseData<?>) o;
+        return stat == that.stat &&
+                errorCode == that.errorCode &&
+                Objects.equals(msg, that.msg) &&
+                Objects.equals(content, that.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(stat, msg, errorCode, content);
     }
 }
