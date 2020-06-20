@@ -93,28 +93,6 @@ public class JacksonUtils {
         return jsonToType(getOmBase(), jsonStr, type);
     }
 
-    /**
-     * json string convert to map with javaBean
-     */
-    public static <T> Map<String, T> json2Map(ObjectMapper om, String jsonStr, Class<T> clazz){
-        Map<String, Map<String, Object>> map = null;
-        try {
-            map = om.readValue(jsonStr,
-                    new TypeReference<Map<String, T>>() {
-                    });
-        } catch (IOException ignored) {
-            return null;
-        }
-        Map<String, T> result = new HashMap<String, T>();
-        for (Map.Entry<String, Map<String, Object>> entry : map.entrySet()) {
-            result.put(entry.getKey(), map2pojo(entry.getValue(), clazz));
-        }
-        return result;
-    }
-    public static <T> Map<String, T> json2Map(String jsonStr, Class<T> clazz){
-        return json2Map(getOmBase(), jsonStr, clazz);
-    }
-
     public static <K,V> Map<K, V> json2EasyMap(ObjectMapper om, String jsonStr, Class<K> clazzK, Class<V> clazzV){
         Map<K, V> map = null;
         try {
@@ -156,29 +134,6 @@ public class JacksonUtils {
     }
     public static <K,V> Map<K, V> json2PojoMap(String jsonStr, Class<K> clazzK, Class<V> clazzV){
         return json2PojoMap(getOmBase(), jsonStr, clazzK, clazzV);
-    }
-
-    /**
-     * json array string convert to list with javaBean
-     */
-    public static <T> List<T> json2List(ObjectMapper om, String jsonArrayStr, Class<T> clazz){
-        List<Map<String, Object>> list = null;
-        try {
-            list = om.readValue(jsonArrayStr,
-                    new TypeReference<List<T>>() {
-                    });
-        } catch (IOException ignored) {
-            return null;
-        }
-        List<T> result = new ArrayList<T>();
-        for (Map<String, Object> map : list) {
-            result.add(map2pojo(map, clazz));
-        }
-        return result;
-    }
-
-    public static <T> List<T> json2List(String jsonArrayStr, Class<T> clazz){
-        return json2List(getOmBase(), jsonArrayStr, clazz);
     }
 
     /**
