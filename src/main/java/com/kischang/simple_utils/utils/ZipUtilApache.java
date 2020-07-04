@@ -108,6 +108,10 @@ public class ZipUtilApache {
      * @param destFilePath 输出目录
      */
     public static void unZipCoding(InputStream zipIn, String destFilePath, String encoding, String filterRegex) throws Exception {
+        unZipCoding(zipIn, encoding, filterRegex, new ZipFileHandlerDest(destFilePath));
+    }
+
+    public static void unZipCoding(InputStream zipIn, String encoding, String filterRegex, ZipFileHandler handler) throws Exception {
         long startTime = System.currentTimeMillis();
 
         String tempDir = PathUtils.appendFileName(System.getProperty("java.io.tmpdir"), "JavaUnZipTemp");
@@ -126,14 +130,13 @@ public class ZipUtilApache {
         try {
             fos = new FileOutputStream(tempZipFile);
             IOUtils.copy(zipIn, fos);
-            logger.debug("临时文件写入完成，开始解压：{}   至：{}" + tempZipFile, destFilePath);
-            unZip(tempZipPath, destFilePath, encoding, filterRegex);
+            unZipHandler(tempZipPath, encoding, filterRegex, handler);
         } finally {
             IOUtils.closeQuietly(fos);
             tempZipFile.delete();
             logger.debug("删除临时文件：{}" , tempZipFile);
         }
-        logger.debug("Zip end ：{}  耗时：{}", destFilePath, (System.currentTimeMillis() - startTime));
+        logger.debug("Zip end 耗时：{}", (System.currentTimeMillis() - startTime));
     }
 
     /**
@@ -144,6 +147,15 @@ public class ZipUtilApache {
      * @throws Exception
      */
     public static void unZip(String fileName, String destFilePath, String encoding, String filterRegex)
+            throws Exception {
+        unZipHandler(fileName, encoding, filterRegex, new ZipFileHandlerDest(destFilePath));
+    }
+
+    /**
+     * 解压缩zip文件
+     * @param fileName     要解压的文件名 包含路径 如："c:\\test.zip"
+     */
+    public static void unZipHandler(String fileName, String encoding, String filterRegex, ZipFileHandler handler)
             throws Exception {
         Pattern pattern = filterRegex == null ? null : Pattern.compile(filterRegex);
         //以“GBK”编码创建zip文件，用来处理winRAR压缩的文件。
@@ -157,15 +169,35 @@ public class ZipUtilApache {
                     continue;
                 }
             }
+            handler.handle(entry, zipFile.getInputStream(entry));
+        }
+        zipFile.close();
+    }
+
+    public static interface ZipFileHandler {
+
+        void handle(ZipEntry entry, InputStream in) throws IOException;
+
+    }
+
+    public static class ZipFileHandlerDest implements ZipFileHandler {
+
+        private String destFilePath;
+
+        public ZipFileHandlerDest(String destFilePath) {
+            this.destFilePath = destFilePath;
+        }
+
+        @Override
+        public void handle(ZipEntry entry, InputStream in) throws IOException {
             File file = new File(destFilePath + File.separator + entry.getName());
             if (entry.isDirectory()) {
                 if (!file.exists()) {
                     file.mkdirs();
                 }
-                continue;
+                return;
             }
-            BufferedInputStream bis = new BufferedInputStream(zipFile
-                    .getInputStream(entry));
+            BufferedInputStream bis = new BufferedInputStream(in);
 
             File parent = file.getParentFile();
             if (parent != null && (!parent.exists())) {
@@ -182,7 +214,6 @@ public class ZipUtilApache {
             bos.close();
             bis.close();
         }
-        zipFile.close();
     }
 
 }

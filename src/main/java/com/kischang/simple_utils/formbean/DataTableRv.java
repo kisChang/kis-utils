@@ -21,12 +21,12 @@ public class DataTableRv<T> implements java.io.Serializable{
     }
 
     public DataTableRv(List<T> data, PageInfo pageInfo) {
+        this(data, pageInfo == null ? 1 : pageInfo.getTotalNum());
+    }
+
+    public DataTableRv(List<T> data, int totalPage) {
         this.data = data;
-        if (pageInfo == null){
-            this.recordsFiltered = this.recordsTotal = 1;
-        }else {
-            this.recordsFiltered = this.recordsTotal = pageInfo.getTotalNum();
-        }
+        this.recordsFiltered = this.recordsTotal = totalPage;
     }
 
     public Integer getDraw() {
