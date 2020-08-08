@@ -15,9 +15,15 @@ import java.util.Date;
 public class SimpleDateConverter implements Converter<String, Date> {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleDateConverter.class);
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+    private static SimpleDateFormat simpleDateFormat(){
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    }
+    private static SimpleDateFormat dateFormat(){
+        return new SimpleDateFormat("yyyy-MM-dd");
+    }
+    private static SimpleDateFormat timeFormat(){
+        return new SimpleDateFormat("HH:mm:ss");
+    }
 
     @Override
     public Date convert(String source) {
@@ -29,17 +35,17 @@ public class SimpleDateConverter implements Converter<String, Date> {
 
         if (source.length() >= 19){
             try {
-                return simpleDateFormat.parse(source);
+                return simpleDateFormat().parse(source);
             } catch (ParseException e) {
                 logger.debug("parse date [] fail, source: {}", source, e);
             }
         }else {
             try {
-                return dateFormat.parse(source);
+                return dateFormat().parse(source);
             }catch (ParseException e){
                 logger.debug("parse date fail, source: {}", source, e);
                 try {
-                    return timeFormat.parse(source);
+                    return timeFormat().parse(source);
                 } catch (ParseException e1) {
                     logger.debug("parse date fail, source: {}", source, e1);
                 }

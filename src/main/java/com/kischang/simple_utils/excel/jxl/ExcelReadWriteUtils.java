@@ -21,8 +21,12 @@ import java.util.*;
  * @version 1.0
  */
 public class ExcelReadWriteUtils {
-    private static final SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private static SimpleDateFormat datetimeFormat(){
+        return  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    }
+    private static SimpleDateFormat dateFormat(){
+        return  new SimpleDateFormat("yyyy-MM-dd");
+    }
 
     //支持的列表
     public static final Map<String, Boolean> SUPPORTLIST = new HashMap<String, Boolean>() {{
@@ -96,9 +100,9 @@ public class ExcelReadWriteUtils {
                             double date = DateUtil.getExcelDate(cell.getDateCellValue());
                             Date javaDate = DateUtil.getJavaDate(date);
                             if (dateTimeType){
-                                onceStr = datetimeFormat.format(javaDate);
+                                onceStr = datetimeFormat().format(javaDate);
                             }else {
-                                onceStr = dateFormat.format(javaDate);
+                                onceStr = dateFormat().format(javaDate);
                             }
                         }else {
                             //同样转换成字符串类型读取
