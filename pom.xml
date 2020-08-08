@@ -6,8 +6,8 @@
 
     <groupId>com.kischang</groupId>
     <artifactId>kis-utils</artifactId>
-    <version>0.3.31-SNAPSHOT</version>
-<!--    <version>0.3.31</version>-->
+<!--    <version>0.3.32-SNAPSHOT</version>-->
+    <version>0.3.32</version>
 
     <description>
         常用工具类整理
@@ -168,6 +168,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
             <version>${spring.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.66</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
