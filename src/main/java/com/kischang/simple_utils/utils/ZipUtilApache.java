@@ -157,7 +157,7 @@ public class ZipUtilApache {
      */
     public static void unZipHandler(String fileName, String encoding, String filterRegex, ZipFileHandler handler)
             throws Exception {
-        Pattern pattern = filterRegex == null ? null : Pattern.compile(filterRegex);
+        Pattern pattern = (filterRegex == null || "".equals(filterRegex)) ? null : Pattern.compile(filterRegex);
         //以“GBK”编码创建zip文件，用来处理winRAR压缩的文件。
         ZipFile zipFile = new ZipFile(fileName, encoding == null ? "GBK" : encoding);
         Enumeration emu = zipFile.getEntries();
