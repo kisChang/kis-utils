@@ -6,6 +6,7 @@ import jxl.write.WritableWorkbook;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Excel 读取写入工具
@@ -69,6 +72,55 @@ public class ExcelReadWriteUtils {
         return realReadExcel(toWb(inputStream, excelFileType), dateTimeType, readline);
     }
 
+    public static List<Map<String, String>> readExcelToMap(InputStream in, boolean excelFileType, Integer sheetIndex, String sheetName){
+        return readExcelToMap(toWb(in, excelFileType), true, sheetIndex, sheetName);
+    }
+    public static List<Map<String, String>> readExcelToMap(File file, Integer sheetIndex, String sheetName){
+        return readExcelToMap(toWb(file), true, sheetIndex, sheetName);
+    }
+    public static List<Map<String, String>> readExcelToMap(org.apache.poi.ss.usermodel.Workbook wb, boolean dateTimeType, Integer sheetIndex, String sheetName){
+        List<Map<String, String>> listMap = new LinkedList<>();
+        Map<Integer, String> colsName = new HashMap<>();
+        Sheet readOnceSheet = null;
+        if (sheetIndex != null){
+            readOnceSheet = wb.getSheetAt(sheetIndex);
+            if (readOnceSheet == null){
+                throw new IllegalArgumentException("sheetIndex:" + sheetIndex + " not found!");
+            }
+        }
+        if (sheetName != null){
+            readOnceSheet = wb.getSheet(sheetName);
+            if (readOnceSheet == null){
+                throw new IllegalArgumentException("sheetName:" + sheetName + " not found!");
+            }
+        }
+        ReadLineValueInterface impl = (val, rowIndex, nowSheetName) -> {
+            //正式代码
+            if (rowIndex == 0){ //这行是第一行
+                for (int i = 0; i < val.length; i++) {
+                    colsName.put(i, val[i]);
+                }
+                return true;
+            }else {
+                Map<String, String> once = new HashMap<>();
+                for (int i = 0; i < val.length; i++) {
+                    String colName = colsName.getOrDefault(i, "未定义_" + i);
+                    once.put(colName, val[i]);
+                }
+                listMap.add(once);
+            }
+            /*读到没有数据了*/
+            return val.length > 0;
+        };
+        if (readOnceSheet != null){
+            //只读一个表
+            realReadExcelSheet(wb, readOnceSheet, dateTimeType, impl);
+        }else {
+            realReadExcel(wb, dateTimeType, impl);
+        }
+        return listMap;
+    }
+
     public static boolean readExcel(File file, com.kischang.simple_utils.excel.jxl.ReadLineValueInterface readline) {
         return readExcel(file, false, readline);
     }
@@ -82,50 +134,145 @@ public class ExcelReadWriteUtils {
         // 对每个工作表进行循环
         for (int sheetIndex = 0; sheetIndex < wb.getNumberOfSheets(); sheetIndex++) {
             Sheet sheet = wb.getSheetAt(sheetIndex);
+            realReadExcelSheet(wb, sheet, dateTimeType, readline);
+        }
+        return false;
+    }
 
-            // 得到当前工作表的行数
-            int rowNum = sheet.getLastRowNum();
-            for (int rowIndex = 0; rowIndex <= rowNum; rowIndex++) {
-                // 得到当前行的所有单元格
-                Row cells = sheet.getRow(rowIndex);
-                // 对每个单元格进行循环
-                List<String> strList = new LinkedList<>();
-                for (int cellIndex = 0; cellIndex < cells.getLastCellNum(); cellIndex++) {
-                    // 读取当前单元格的值
-                    Cell cell = cells.getCell(cellIndex);
-                    String onceStr = null;
-                    if (cell.getCellTypeEnum() == CellType.NUMERIC){
-                        if (DateUtil.isCellDateFormatted(cell)){
-                            //时间类型
-                            double date = DateUtil.getExcelDate(cell.getDateCellValue());
-                            Date javaDate = DateUtil.getJavaDate(date);
-                            if (dateTimeType){
-                                onceStr = datetimeFormat().format(javaDate);
-                            }else {
-                                onceStr = dateFormat().format(javaDate);
-                            }
-                        }else {
-                            //同样转换成字符串类型读取
-                            cell.setCellType(CellType.STRING);
-                            onceStr = cell.toString();
-                        }
-                    }else {
-                        cell.setCellType(CellType.STRING);
-                        onceStr = cell.toString();
-                    }
-                    if (onceStr != null){
-                        if ("".equals(onceStr)){
-                            if (!strList.isEmpty()){
-                                strList.add(onceStr);
-                            }
-                        }else {
-                            strList.add(onceStr);
-                        }
-                    }
-                }
-                // 调用接口处理
-                if (!readline.readLineValue(strList.toArray(new String[]{}), rowIndex, sheet.getSheetName())) {
+    private static void realReadExcelSheet(org.apache.poi.ss.usermodel.Workbook wb, Sheet sheet, boolean dateTimeType, ReadLineValueInterface readline) {
+        // 得到当前工作表的行数
+        int rowNum = sheet.getLastRowNum();
+        for (int rowIndex = 0; rowIndex <= rowNum; rowIndex++) {
+            // 得到当前行的所有单元格
+            Row cells = sheet.getRow(rowIndex);
+            // 对每个单元格进行循环
+            List<String> strList = new LinkedList<>();
+            for (int cellIndex = 0; cellIndex < cells.getLastCellNum(); cellIndex++) {
+                String onceStr = null;
+                // 读取当前单元格的值
+                Cell cell = cells.getCell(cellIndex);
+                if (cell == null){ //空的单元格就跳过了
                     break;
+                }
+                boolean isMerge = isMergedRegion(sheet, rowIndex, cell.getColumnIndex());
+                if(isMerge) {//判断是否具有合并单元格
+                    onceStr = getMergedRegionValue(sheet, rowIndex, cell.getColumnIndex());
+                }else {
+                    onceStr = getCellValue(cell, dateTimeType);
+                }
+                if ("".equals(onceStr)){
+                    if (!strList.isEmpty()){
+                        strList.add(onceStr);
+                    }
+                }else {
+                    strList.add(onceStr);
+                }
+            }
+            // 调用接口处理
+            if (!readline.readLineValue(strList.toArray(new String[]{}), rowIndex, sheet.getSheetName())) {
+                break;
+            }
+        }
+    }
+
+    public static String getCellValue(Cell cell) {
+        return getCellValue(cell, true);
+    }
+    public static String getCellValue(Cell cell, boolean dateTimeType) {
+        if (cell == null) return "";
+
+        if (cell.getCellTypeEnum() == CellType.STRING) {
+            return cell.getStringCellValue();
+        } else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
+            return String.valueOf(cell.getBooleanCellValue());
+        } else if (cell.getCellTypeEnum() == CellType.FORMULA) { /*公式*/
+            return cell.getCellFormula();
+        } else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
+            if (DateUtil.isCellDateFormatted(cell)){
+                //时间类型
+                double date = DateUtil.getExcelDate(cell.getDateCellValue());
+                Date javaDate = DateUtil.getJavaDate(date);
+                if (dateTimeType){
+                    return datetimeFormat().format(javaDate);
+                }else {
+                    return dateFormat().format(javaDate);
+                }
+            }else {
+                return String.valueOf(cell.getNumericCellValue());
+            }
+        }
+        return "";
+    }
+
+
+    /**
+     * 获取合并单元格的值
+     * @param sheet
+     * @param row
+     * @param column
+     * @return
+     */
+    public static String getMergedRegionValue(Sheet sheet ,int row , int column){
+        int sheetMergeCount = sheet.getNumMergedRegions();
+        for(int i = 0 ; i < sheetMergeCount ; i++){
+            CellRangeAddress ca = sheet.getMergedRegion(i);
+            int firstColumn = ca.getFirstColumn();
+            int lastColumn = ca.getLastColumn();
+            int firstRow = ca.getFirstRow();
+            int lastRow = ca.getLastRow();
+            if(row >= firstRow && row <= lastRow){
+                if(column >= firstColumn && column <= lastColumn){
+                    Row fRow = sheet.getRow(firstRow);
+                    Cell fCell = fRow.getCell(firstColumn);
+                    return getCellValue(fCell) ;
+                }
+            }
+        }
+        return null ;
+    }
+
+    /**
+     * 判断合并了行 (仅限横向合并)
+     * @param sheet
+     * @param row
+     * @param column
+     * @return
+     */
+    private static boolean isMergedRow(Sheet sheet,int row ,int column) {
+        int sheetMergeCount = sheet.getNumMergedRegions();
+        for (int i = 0; i < sheetMergeCount; i++) {
+            CellRangeAddress range = sheet.getMergedRegion(i);
+            int firstColumn = range.getFirstColumn();
+            int lastColumn = range.getLastColumn();
+            int firstRow = range.getFirstRow();
+            int lastRow = range.getLastRow();
+            if(row == firstRow && row == lastRow){
+                if(column >= firstColumn && column <= lastColumn){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 判断指定的单元格是否是合并的区域
+     * @param sheet
+     * @param row 行下标
+     * @param column 列下标
+     * @return
+     */
+    private static boolean isMergedRegion(Sheet sheet,int row ,int column) {
+        int sheetMergeCount = sheet.getNumMergedRegions();
+        for (int i = 0; i < sheetMergeCount; i++) {
+            CellRangeAddress range = sheet.getMergedRegion(i);
+            int firstColumn = range.getFirstColumn();
+            int lastColumn = range.getLastColumn();
+            int firstRow = range.getFirstRow();
+            int lastRow = range.getLastRow();
+            if(row >= firstRow && row <= lastRow){
+                if(column >= firstColumn && column <= lastColumn){
+                    return true;
                 }
             }
         }
