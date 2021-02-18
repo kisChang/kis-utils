@@ -19,7 +19,7 @@
         <zxing.version>3.4.0</zxing.version>
         <scala.version>2.11.8</scala.version>
         <poi.version>3.17</poi.version>
-        <jackson.version>2.10.4</jackson.version>
+        <jackson.version>2.12.1</jackson.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.8</jdk-version>
