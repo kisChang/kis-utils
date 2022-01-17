@@ -8,6 +8,9 @@ import com.kischang.simple_utils.execute.ExecResult;
 import com.kischang.simple_utils.utils.OS;
 import org.apache.commons.io.IOUtils;
 
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -19,6 +22,22 @@ public class BakUpMysqlUtils {
 
     private static final Pattern USE_PATTERN = Pattern.compile("USE `\\w+`;", Pattern.UNIX_LINES);
     private static final String EMPTY = "";
+
+    /*public static String mysqlIncreamBackup() {
+        try (InputStream in = BakUpMysqlUtils.class.getClassLoader()
+                .getResourceAsStream("mysqlIncreamBackup.sh")){
+            String shell = IOUtils.toString(in, StandardCharsets.UTF_8);
+            String fileName = "/tmp/java-exam-temborn-shell-" + UUID.randomUUID() +".sh";
+            OutputStream out = new FileOutputStream(fileName);
+            IOUtils.write(shell, out);
+            ExecResult result = CommandUtils.exec(fileName + " backupDir mysqlDir BinFile host port username password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "";
+    }*/
+
     /**
      * 自动检测系统版本进行相应的备份操作
      */

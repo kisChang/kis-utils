@@ -49,6 +49,9 @@ public class MysqlDumpBuilder {
     private String host = "localhost";
     private int port = 3306;
 
+    private boolean lockAllTables = false;
+    private boolean flushLogs = false;
+
     private List<String> databases;         //备份的数据库       （--databases）
     private List<String> tables;            //备份的数据库中指定表 （--tables）
     private List<String> ignoreTables;      //跳过的数据表 （--ignore-table）
@@ -119,6 +122,14 @@ public class MysqlDumpBuilder {
         if (otherArgs != null){
             sb.append(" ").append(otherArgs).append(" ");
         }
+
+        if (lockAllTables) {
+            sb.append(" --lock-all-tables ");
+        }
+        if (flushLogs) {
+            sb.append(" --flush-logs ");
+        }
+
         if (!isNullArr(databases)){
             sb.append(" --databases");
             for (String str : databases){
@@ -253,6 +264,17 @@ public class MysqlDumpBuilder {
         this.opt = opt;
         return this;
     }
+
+    public MysqlDumpBuilder setLockAllTables(boolean lockAllTables) {
+        this.lockAllTables = lockAllTables;
+        return this;
+    }
+
+    public MysqlDumpBuilder setFlushLogs(boolean flushLogs) {
+        this.flushLogs = flushLogs;
+        return this;
+    }
+
     public MysqlDumpBuilder setOutToFile(String file) {
         this.outType = false;
         this.outFile = file;
