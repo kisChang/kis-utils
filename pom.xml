@@ -20,7 +20,7 @@
         <scala.version>2.11.8</scala.version>
         <poi.version>3.17</poi.version>
         <!--<poi.version>5.2.0</poi.version>-->
-        <jackson.version>2.13.1</jackson.version>
+        <jackson.version>2.13.2.1</jackson.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.8</jdk-version>
