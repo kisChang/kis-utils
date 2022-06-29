@@ -18,7 +18,7 @@
         <spring.version>5.3.18</spring.version>
         <zxing.version>3.4.1</zxing.version>
         <scala.version>2.11.8</scala.version>
-        <poi.version>3.17</poi.version>
+        <poi.version>4.1.1</poi.version>
         <!--<poi.version>5.2.0</poi.version>-->
         <jackson.version>2.13.2.1</jackson.version>
 
