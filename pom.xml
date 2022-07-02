@@ -15,12 +15,12 @@
     </description>
 
     <properties>
-        <spring.version>5.3.18</spring.version>
+        <spring.version>5.3.20</spring.version>
         <zxing.version>3.4.1</zxing.version>
         <scala.version>2.11.8</scala.version>
-        <poi.version>4.1.1</poi.version>
+        <poi.version>4.1.2</poi.version>
         <!--<poi.version>5.2.0</poi.version>-->
-        <jackson.version>2.13.2.1</jackson.version>
+        <jackson.version>2.13.3</jackson.version>
 
         <file-charset>UTF-8</file-charset>
         <jdk-version>1.8</jdk-version>
@@ -46,21 +46,21 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.33</version>
+            <version>1.7.36</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.10.11</version>
+            <version>1.10.12</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20211205</version>
+            <version>20220320</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -175,7 +175,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.69</version>
+            <version>1.70</version>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -306,7 +306,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.3.1</version>
+                        <version>3.2.0</version>
                     </plugin>
                     <!-- GPG plugin -->
                     <plugin>

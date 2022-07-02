@@ -59,7 +59,7 @@ public class ExcelReadWriteUtils {
     public static org.apache.poi.ss.usermodel.Workbook toWb(File is){
         try {
             return WorkbookFactory.create(is, null, true);
-        } catch (IOException | InvalidFormatException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
