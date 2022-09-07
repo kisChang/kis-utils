@@ -4,6 +4,24 @@ SimpleUtils
 
 常用工具类整理
 
+使用方式:
+
+```xml
+maven
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://www.jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.kisChang</groupId>
+    <artifactId>kis-utils</artifactId>
+    <version>{{version}}</version>
+</dependency>
+```
+
 > **utils:**
 
 > - BytesUtils（二进制数组操作：MD5、Base64、copy）
