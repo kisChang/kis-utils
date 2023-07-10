@@ -143,9 +143,8 @@ public class MysqlDumpBuilder {
             }
         }
         if (!isNullArr(ignoreTables)){
-            sb.append(" --ignore-table");
             for (String str : ignoreTables){
-                sb.append(" ").append(str);
+                sb.append(" --ignore-table=").append(str.trim()).append(" ");
             }
         }
 
